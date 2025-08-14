@@ -297,51 +297,63 @@
         {
             category: "挨拶",
             items: [
-                { japanese: "おはよう", portuguese: "Bom dia", context: "朝の挨拶", example: { speaker1: "Mestre: Bom dia, pessoal!", speaker2: "Aluno: Bom dia, Mestre!" }, fillInBlank: { sentence: "___ dia, pessoal!", answer: "Bom" } },
-                { japanese: "こんにちは", portuguese: "Boa tarde", context: "午後の挨拶", example: { speaker1: "Aluno: Boa tarde, galera!", speaker2: "Outro: Boa tarde! Vamos treinar." }, fillInBlank: { sentence: "Boa ___, galera!", answer: "tarde" } },
-                { japanese: "こんばんは/おやすみ", portuguese: "Boa noite", context: "夜の挨拶", example: { speaker1: "Mestre: Boa noite e até amanhã.", speaker2: "Aluno: Boa noite, Mestre!" }, fillInBlank: { sentence: "Boa ___, e até amanhã.", answer: "noite" } },
-                { japanese: "やあ", portuguese: "Oi / Olá", context: "気軽な挨拶", example: { speaker1: "Aluno: Oi, tudo bem?", speaker2: "Outro: Oi! Tudo joia." }, fillInBlank: { sentence: "___, tudo bem?", answer: "Oi" } },
-                { japanese: "さようなら", portuguese: "Tchau / Adeus", context: "別れの挨拶", example: { speaker1: "Aluno: Tchau, pessoal!", speaker2: "Mestre: Tchau! Bom descanso." }, fillInBlank: { sentence: "___, pessoal!", answer: "Tchau" } },
+                { japanese: "おはよう", portuguese: "Bom dia", context: "朝の挨拶", example: { speaker1: "Mestre: Bom dia, pessoal!", speaker1_jp: "先生: おはよう、みんな！", speaker2: "Aluno: Bom dia, Mestre!", speaker2_jp: "生徒: おはようございます、先生！" }, fillInBlank: { sentence: "___ dia, pessoal!", answer: "Bom", translation: "___ 、みんな！" } },
+                { japanese: "こんにちは", portuguese: "Boa tarde", context: "午後の挨拶", example: { speaker1: "Aluno: Boa tarde, galera!", speaker1_jp: "生徒: こんにちは、みんな！", speaker2: "Outro: Boa tarde! Vamos treinar.", speaker2_jp: "他の生徒: こんにちは！練習しよう。" }, fillInBlank: { sentence: "Boa ___, galera!", answer: "tarde", translation: "___ 、みんな！" } },
+                { japanese: "こんばんは/おやすみ", portuguese: "Boa noite", context: "夜の挨拶", example: { speaker1: "Mestre: Boa noite e até amanhã.", speaker1_jp: "先生: こんばんは、また明日。", speaker2: "Aluno: Boa noite, Mestre!", speaker2_jp: "生徒: おやすみなさい、先生！" }, fillInBlank: { sentence: "Boa ___, e até amanhã.", answer: "noite", translation: "___ 、また明日。" } },
+                { japanese: "やあ", portuguese: "Oi / Olá", context: "気軽な挨拶", example: { speaker1: "Aluno: Oi, tudo bem?", speaker1_jp: "生徒: やあ、元気？", speaker2: "Outro: Oi! Tudo joia.", speaker2_jp: "他の生徒: やあ！元気だよ。" }, fillInBlank: { sentence: "___, tudo bem?", answer: "Oi", translation: "___ 、元気？" } },
+                { japanese: "さようなら", portuguese: "Tchau / Adeus", context: "別れの挨拶", example: { speaker1: "Aluno: Tchau, pessoal!", speaker1_jp: "生徒: じゃあね、みんな！", speaker2: "Mestre: Tchau! Bom descanso.", speaker2_jp: "先生: じゃあね！ゆっくり休んで。" }, fillInBlank: { sentence: "___, pessoal!", answer: "Tchau", translation: "___ 、みんな！" } },
             ]
         },
         {
             category: "状態・様子",
             items: [
-                { japanese: "速い", portuguese: "Rápido", context: "動きの速さ", example: { speaker1: "Mestre: Mais rápido!", speaker2: "Aluno: Estou tentando!" }, fillInBlank: { sentence: "O jogo está muito ___.", answer: "rápido" } },
-                { japanese: "遅い", portuguese: "Devagar / Lento", context: "動きの速さ", example: { speaker1: "Mestre: Devagar, sinta o movimento.", speaker2: "Aluno: Entendi." }, fillInBlank: { sentence: "Faça a ginga mais ___.", answer: "lenta" } },
-                { japanese: "強い", portuguese: "Forte", context: "力の強さ", example: { speaker1: "Mestre: Que chute forte!", speaker2: "Aluno: Obrigado!" }, fillInBlank: { sentence: "Seu chute é muito ___.", answer: "forte" } },
-                { japanese: "美しい", portuguese: "Bonito / Belo", context: "動きの美しさ", example: { speaker1: "Mestre: Que movimento bonito!", speaker2: "Aluno: Valeu!" }, fillInBlank: { sentence: "Sua capoeira é muito ___.", answer: "bonita" } },
-                { japanese: "高い", portuguese: "Alto", context: "動きの高さ", example: { speaker1: "Mestre: Chute mais alto!", speaker2: "Aluno: Sim, mestre!" }, fillInBlank: { sentence: "Ele pulou bem ___.", answer: "alto" } },
-                { japanese: "低い", portuguese: "Baixo", context: "動きの低さ", example: { speaker1: "Mestre: Jogue mais baixo.", speaker2: "Aluno: Ok!" }, fillInBlank: { sentence: "Fique mais ___ na negativa.", answer: "baixo" } },
-                { japanese: "暑い", portuguese: "Quente", context: "気温", example: { speaker1: "Aluno: Hoje está muito quente!", speaker2: "Outro: Verdade, preciso de água." }, fillInBlank: { sentence: "Está muito ___ aqui.", answer: "quente" } },
+                { japanese: "速い", portuguese: "Rápido", context: "動きの速さ", example: { speaker1: "Mestre: Mais rápido!", speaker1_jp: "先生: もっと速く！", speaker2: "Aluno: Estou tentando!", speaker2_jp: "生徒: 頑張ってます！" }, fillInBlank: { sentence: "O jogo está muito ___.", answer: "rápido", translation: "ジョーゴがとても___。" } },
+                { japanese: "遅い", portuguese: "Devagar / Lento", context: "動きの速さ", example: { speaker1: "Mestre: Devagar, sinta o movimento.", speaker1_jp: "先生: ゆっくり、動きを感じて。", speaker2: "Aluno: Entendi.", speaker2_jp: "生徒: わかりました。" }, fillInBlank: { sentence: "Faça a ginga mais ___.", answer: "lenta", translation: "ジンガをもっと___。" } },
+                { japanese: "強い", portuguese: "Forte", context: "力の強さ", example: { speaker1: "Mestre: Que chute forte!", speaker1_jp: "先生: なんて強い蹴りだ！", speaker2: "Aluno: Obrigado!", speaker2_jp: "生徒: ありがとうございます！" }, fillInBlank: { sentence: "Seu chute é muito ___.", answer: "forte", translation: "君の蹴りはとても___。" } },
+                { japanese: "弱い", portuguese: "Fraco", context: "もっと力を入れてほしいとき", example: { speaker1: "Mestre: Mais forte, está muito fraco.", speaker1_jp: "先生: もっと強く、弱すぎるよ。", speaker2: "Aluno: Vou tentar de novo.", speaker2_jp: "生徒: もう一度やってみます。" }, fillInBlank: { sentence: "O chute está muito ___.", answer: "fraco", translation: "その蹴りはとても___。" } },
+                { japanese: "暑い", portuguese: "Quente", context: "気温", example: { speaker1: "Aluno: Hoje está muito quente!", speaker1_jp: "生徒: 今日はすごく暑い！", speaker2: "Outro: Verdade, preciso de água.", speaker2_jp: "他の生徒: 本当だね、水が必要だ。" }, fillInBlank: { sentence: "Está muito ___ aqui.", answer: "quente", translation: "ここはとても___。" } },
+                { japanese: "寒い", portuguese: "Frio", context: "冬の早朝クラス", example: { speaker1: "Aluno: Está frio, preciso me aquecer.", speaker1_jp: "生徒: 寒いな、体を温めないと。", speaker2: "Mestre: Vamos começar com a ginga para esquentar.", speaker2_jp: "先生: ジンガから始めて温めよう。" }, fillInBlank: { sentence: "Hoje está muito ___.", answer: "frio", translation: "今日はとても___。" } },
+                { japanese: "美しい", portuguese: "Bonito / Belo", context: "動きの美しさ", example: { speaker1: "Mestre: Que movimento bonito!", speaker1_jp: "先生: なんて美しい動きだ！", speaker2: "Aluno: Valeu!", speaker2_jp: "生徒: ありがとう！" }, fillInBlank: { sentence: "Sua capoeira é muito ___.", answer: "bonita", translation: "君のカポエイラはとても___。" } },
+                { japanese: "良い", portuguese: "Bom / Boa", context: "技がうまくできたとき", example: { speaker1: "Mestre: Muito bom, continue assim.", speaker1_jp: "先生: とても良い、その調子で。", speaker2: "Aluno: Sim, Mestre!", speaker2_jp: "生徒: はい、先生！" }, fillInBlank: { sentence: "Muito ___, continue assim.", answer: "bom", translation: "とても___、その調子で。" } },
+                { japanese: "高い", portuguese: "Alto", context: "動きの高さ", example: { speaker1: "Mestre: Chute mais alto!", speaker1_jp: "先生: もっと高く蹴って！", speaker2: "Aluno: Sim, mestre!", speaker2_jp: "生徒: はい、先生！" }, fillInBlank: { sentence: "Ele pulou bem ___.", answer: "alto", translation: "彼はとても___跳んだ。" } },
+                { japanese: "低い", portuguese: "Baixo", context: "動きの低さ", example: { speaker1: "Mestre: Jogue mais baixo.", speaker1_jp: "先生: もっと低くジョーゴして。", speaker2: "Aluno: Ok!", speaker2_jp: "生徒: はい！" }, fillInBlank: { sentence: "Fique mais ___ na negativa.", answer: "baixo", translation: "ネガチーヴァでもっと___なって。" } },
             ]
         },
         {
             category: "動作",
             items: [
-                { japanese: "回る", portuguese: "Girar / Rodar", context: "回転する動き", example: { speaker1: "Mestre: Gira sem perder o equilíbrio.", speaker2: "Aluno: Certo." }, fillInBlank: { sentence: "Vamos ___ para o outro lado.", answer: "girar" } },
-                { japanese: "動く", portuguese: "Mover / Mexer", context: "体を動かす", example: { speaker1: "Mestre: Mexe o corpo, não fique parado.", speaker2: "Aluno: Ok!" }, fillInBlank: { sentence: "Não pare de se ___.", answer: "mover" } },
-                { japanese: "蹴る", portuguese: "Chutar", context: "蹴り技", example: { speaker1: "Mestre: Chuta com mais força.", speaker2: "Aluno: Assim?" }, fillInBlank: { sentence: "Vou ___ a bola.", answer: "chutar" } },
-                { japanese: "避ける", portuguese: "Esquivar", context: "攻撃をかわす", example: { speaker1: "Mestre: Esquiva para o lado.", speaker2: "Aluno: Entendi." }, fillInBlank: { sentence: "Aprenda a ___ bem.", answer: "esquivar" } },
-                { japanese: "始める", portuguese: "Começar / Iniciar", context: "練習の開始", example: { speaker1: "Mestre: Vamos começar a roda.", speaker2: "Alunos: Vamos!" }, fillInBlank: { sentence: "A aula vai ___.", answer: "começar" } },
+                { japanese: "回る", portuguese: "Girar / Rodar", context: "回転する動き", example: { speaker1: "Mestre: Gira sem perder o equilíbrio.", speaker1_jp: "先生: バランスを崩さずに回って。", speaker2: "Aluno: Certo.", speaker2_jp: "生徒: はい。" }, fillInBlank: { sentence: "Vamos ___ para o outro lado.", answer: "girar", translation: "反対側に___ましょう。" } },
+                { japanese: "動く", portuguese: "Mover / Mexer", context: "体を動かす", example: { speaker1: "Mestre: Mexe o corpo, não fique parado.", speaker1_jp: "先生: 体を動かして、止まらないで。", speaker2: "Aluno: Ok!", speaker2_jp: "生徒: はい！" }, fillInBlank: { sentence: "Não pare de se ___.", answer: "mover", translation: "___のをやめないで。" } },
+                { japanese: "蹴る", portuguese: "Chutar", context: "蹴り技", example: { speaker1: "Mestre: Chuta com mais força.", speaker1_jp: "先生: もっと強く蹴って。", speaker2: "Aluno: Assim?", speaker2_jp: "生徒: こうですか？" }, fillInBlank: { sentence: "Vou ___ a bola.", answer: "chutar", translation: "ボールを___ます。" } },
+                { japanese: "避ける", portuguese: "Esquivar", context: "攻撃をかわす", example: { speaker1: "Mestre: Esquiva para o lado.", speaker1_jp: "先生: 横に避けて。", speaker2: "Aluno: Entendi.", speaker2_jp: "生徒: わかりました。" }, fillInBlank: { sentence: "Aprenda a ___ bem.", answer: "esquivar", translation: "上手に___ことを学んで。" } },
+                { japanese: "止まる", portuguese: "Parar", context: "動きをいったん中断する指示", example: { speaker1: "Mestre: Para! Vamos corrigir o movimento.", speaker1_jp: "先生: 止まって！動きを直そう。", speaker2: "Aluno: Certo.", speaker2_jp: "生徒: はい。" }, fillInBlank: { sentence: "___! Vamos corrigir.", answer: "Para", translation: "___！直そう。" } },
+                { japanese: "始める", portuguese: "Começar / Iniciar", context: "練習の開始", example: { speaker1: "Mestre: Vamos começar a roda.", speaker1_jp: "先生: ホーダを始めよう。", speaker2: "Alunos: Vamos!", speaker2_jp: "生徒たち: 始めましょう！" }, fillInBlank: { sentence: "A aula vai ___.", answer: "começar", translation: "授業が___ます。" } },
+                { japanese: "当てる", portuguese: "Acertar / Bater", context: "コンタクトありのミット練習", example: { speaker1: "Mestre: Acerta no centro do alvo.", speaker1_jp: "先生: 的の中心に当てて。", speaker2: "Aluno: Acertei, Mestre?", speaker2_jp: "生徒: 当たりましたか、先生？" }, fillInBlank: { sentence: "Tente ___ o alvo.", answer: "acertar", translation: "的に___てみて。" } },
             ]
         },
         {
-            category: "指示・応答",
+            category: "名詞・その他",
             items: [
-                { japanese: "質問があります", portuguese: "Tenho uma pergunta", context: "質問したいとき", example: { speaker1: "Aluno: Mestre, tenho uma pergunta.", speaker2: "Mestre: Pode falar." }, fillInBlank: { sentence: "Tenho uma ___.", answer: "pergunta" } },
-                { japanese: "わかりました", portuguese: "Entendi / Certo", context: "理解したとき", example: { speaker1: "Mestre: Faça a negativa.", speaker2: "Aluno: Entendi." }, fillInBlank: { sentence: "___, vou fazer isso.", answer: "Certo" } },
-                { japanese: "水を飲んでもいいですか？", portuguese: "Posso beber água?", context: "水分補給の許可を求める", example: { speaker1: "Aluno: Estou com sede. Posso beber água?", speaker2: "Mestre: Sim, mas volte rápido." }, fillInBlank: { sentence: "Posso beber ___?", answer: "água" } },
-                { japanese: "もう一度お願いします", portuguese: "De novo, por favor", context: "繰り返してほしいとき", example: { speaker1: "Aluno: Não entendi. De novo, por favor.", speaker2: "Mestre: Claro." }, fillInBlank: { sentence: "___, por favor.", answer: "De novo" } },
+                { japanese: "右", portuguese: "Direita", context: "動きの方向を指示するとき", example: { speaker1: "Mestre: Ginga para a direita.", speaker1_jp: "先生: 右にジンガして。", speaker2: "Aluno: Direita, entendi.", speaker2_jp: "生徒: 右ですね、わかりました。" }, fillInBlank: { sentence: "Vire à ___.", answer: "direita", translation: "___に曲がって。" } },
+                { japanese: "左", portuguese: "Esquerda", context: "回避方向の指示", example: { speaker1: "Mestre: Esquiva para a esquerda.", speaker1_jp: "先生: 左に避けて。", speaker2: "Aluno: Certo, esquerda.", speaker2_jp: "生徒: はい、左ですね。" }, fillInBlank: { sentence: "Vire à ___.", answer: "esquerda", translation: "___に曲がって。" } },
+                { japanese: "列", portuguese: "Fila", context: "順番待ちの並びを作るとき", example: { speaker1: "Mestre: Façam uma fila para praticar.", speaker1_jp: "先生: 練習のために列を作って。", speaker2: "Aluno: Aqui está a fila, Mestre.", speaker2_jp: "生徒: ここに列ができました、先生。" }, fillInBlank: { sentence: "Façam uma ___.", answer: "fila", translation: "___を作って。" } },
+                { japanese: "質問", portuguese: "Pergunta", context: "生徒が技について聞く", example: { speaker1: "Aluno: Tenho uma pergunta sobre a negativa.", speaker1_jp: "生徒: ネガチーヴァについて質問があります。", speaker2: "Mestre: Claro, pode perguntar.", speaker2_jp: "先生: どうぞ、話して。" }, fillInBlank: { sentence: "Tenho uma ___.", answer: "pergunta", translation: "___があります。" } },
+                { japanese: "2人組", portuguese: "Dupla", context: "ペアを組んで練習するとき", example: { speaker1: "Mestre: Formem duplas para o próximo exercício.", speaker1_jp: "先生: 次の練習のために2人組を作って。", speaker2: "Aluno: Eu e ele somos dupla.", speaker2_jp: "生徒: 僕と彼がペアです。" }, fillInBlank: { sentence: "Formem ___.", answer: "duplas", translation: "___を作って。" } },
+                { japanese: "喉の渇き", portuguese: "Sede", context: "練習中に生徒が水を求める", example: { speaker1: "Aluno: Estou com sede, posso beber água?", speaker1_jp: "生徒: 喉が渇きました。水を飲んでもいいですか？", speaker2: "Mestre: Sim, mas rápido.", speaker2_jp: "先生: いいよ、でも早くね。" }, fillInBlank: { sentence: "Estou com ___.", answer: "sede", translation: "___が渇きました。" } },
+                { japanese: "水", portuguese: "Água", context: "休憩中", example: { speaker1: "Mestre: Bebam água para não desidratar.", speaker1_jp: "先生: 脱水しないように水を飲みなさい。", speaker2: "Aluno: Já bebi, Mestre.", speaker2_jp: "生徒: もう飲みました、先生。" }, fillInBlank: { sentence: "Preciso de ___.", answer: "água", translation: "___が必要です。" } },
+                { japanese: "腹筋", portuguese: "Abdominal / Abdominais", context: "ウォームアップや体幹強化の時間", example: { speaker1: "Mestre: Vamos fazer 30 abdominais.", speaker1_jp: "先生: 腹筋を30回やろう。", speaker2: "Aluno: Mestre, posso fazer mais rápido?", speaker2_jp: "生徒: 先生、もっと速くやってもいいですか？" }, fillInBlank: { sentence: "Vamos fazer ___.", answer: "abdominais", translation: "___をしましょう。" } },
+                { japanese: "わかりました", portuguese: "Entendi / Certo", context: "理解したとき", example: { speaker1: "Mestre: Faça a negativa.", speaker1_jp: "先生: ネガチーヴァをやって。", speaker2: "Aluno: Entendi.", speaker2_jp: "生徒: わかりました。" }, fillInBlank: { sentence: "___, vou fazer isso.", answer: "Certo", translation: "___、それをやります。" } },
+                { japanese: "もう一度お願いします", portuguese: "De novo, por favor", context: "繰り返してほしいとき", example: { speaker1: "Aluno: Não entendi. De novo, por favor.", speaker1_jp: "生徒: わかりませんでした。もう一度お願いします。", speaker2: "Mestre: Claro.", speaker2_jp: "先生: もちろん。" }, fillInBlank: { sentence: "___, por favor.", answer: "De novo", translation: "___、お願いします。" } },
             ]
         },
         {
             category: "乾杯",
             items: [
-                { japanese: "乾杯！", portuguese: "Saúde!", context: "打ち上げなどで", example: { speaker1: "Mestre: Um brinde a todos! Saúde!", speaker2: "Alunos: Saúde!" }, fillInBlank: { sentence: "Um brinde à amizade! ___!", answer: "Saúde" } },
+                { japanese: "乾杯！", portuguese: "Saúde!", context: "打ち上げなどで", example: { speaker1: "Mestre: Um brinde a todos! Saúde!", speaker1_jp: "先生: みんなに乾杯！サウージ！", speaker2: "Alunos: Saúde!", speaker2_jp: "生徒たち: サウージ！" }, fillInBlank: { sentence: "Um brinde à amizade! ___!", answer: "Saúde", translation: "友情に乾杯！___！" } },
             ]
         }
     ];
+
 
     // ===================================================================================
     // APPLICATION LOGIC
@@ -601,6 +613,7 @@
             
             const fillInBlankHTML = item.fillInBlank ? `
                 <div class="mt-4 pt-4 border-t conv-fill-in-blank" data-full-sentence="${item.portuguese}">
+                    <p class="text-sm text-gray-500 mb-2 conv-fill-in-blank-jp">${item.fillInBlank.translation}</p>
                     <p class="text-sm font-semibold mb-2">穴埋め練習:</p>
                     <div class="flex items-center text-lg">
                         ${item.fillInBlank.sentence.replace('___', `<input type="text" class="fill-in-blank-input" data-answer="${item.fillInBlank.answer}">`)}
@@ -609,7 +622,9 @@
             ` : '';
 
             const speaker1Text = item.example.speaker1.split(/:(.*)/s)[1].trim();
+            const speaker1Jp = item.example.speaker1_jp;
             const speaker2Text = item.example.speaker2.split(/:(.*)/s)[1].trim();
+            const speaker2Jp = item.example.speaker2_jp;
 
             card.innerHTML = `
                 <div class="flex justify-between items-start">
@@ -629,10 +644,12 @@
                         <p><strong>Mestre:</strong> ${speaker1Text}</p>
                         <i class="fas fa-volume-up speak-btn speak-example-line-btn" data-speak="${speaker1Text}"></i>
                     </div>
+                    <p class="text-gray-500 text-xs mt-1">（訳）${speaker1Jp}</p>
                     <div class="flex items-center justify-between mt-1">
                         <p><strong>Aluno:</strong> ${speaker2Text}</p>
                         <i class="fas fa-volume-up speak-btn speak-example-line-btn" data-speak="${speaker2Text}"></i>
                     </div>
+                    <p class="text-gray-500 text-xs mt-1">（訳）${speaker2Jp}</p>
                 </div>
                 ${fillInBlankHTML}
             `;
@@ -660,12 +677,15 @@
             const jp = card.querySelector('.conv-jp');
             const details = card.querySelectorAll('.conv-details');
             const fillInBlank = card.querySelector('.conv-fill-in-blank');
+            const fillInBlankJp = card.querySelector('.conv-fill-in-blank-jp');
 
             // Reset visibility
             pt.classList.remove('hidden');
             jp.classList.remove('hidden');
             details.forEach(d => d.classList.remove('hidden'));
             if (fillInBlank) fillInBlank.classList.remove('hidden');
+            if (fillInBlankJp) fillInBlankJp.classList.remove('hidden');
+
 
             if (conversationViewMode === 'portuguese') {
                 jp.classList.add('hidden');
@@ -674,6 +694,7 @@
             } else if (conversationViewMode === 'japanese') {
                 pt.classList.add('hidden');
                 details.forEach(d => d.classList.add('hidden'));
+                if (fillInBlankJp) fillInBlankJp.classList.remove('hidden');
             } else { // 'full'
                 if (fillInBlank) fillInBlank.classList.add('hidden');
             }
