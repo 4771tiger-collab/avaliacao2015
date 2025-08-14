@@ -1,554 +1,754 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Capoeira Português Trainer</title>
-  <style>
-  :root {
-    --bg: #f0f6ff;      /* light blue */
-    --card: #ffffff;     /* white */
-    --muted: #475569;    /* slate-600 */
-    --text: #0f172a;     /* slate-900 */
-    --accent: #2563eb;   /* blue-600 */
-    --accent-2: #0ea5e9; /* sky-500 */
-    --danger: #ef4444;   /* red-500 */
-    --warning: #f59e0b;  /* amber-500 */
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans JP, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-    background: linear-gradient(180deg, #f8fbff 0%, #f0f6ff 60%, #ffffff 100%);
-    color: var(--text);
-    min-height: 100vh;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-  }
-  header {
-    padding: 20px 16px; border-bottom: 1px solid #e5e7eb; backdrop-filter: blur(6px);
-    position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.75);
-  }
-  .wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
-  h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: .3px; }
-  .sub { color: var(--muted); font-size: 14px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capoeira-Português Learning App</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  .controls, .card, .result-card {
-    background:
-      radial-gradient(900px 400px at 10% -10%, rgba(59,130,246,.08), transparent 60%),
-      radial-gradient(700px 300px at 110% 10%, rgba(14,165,233,.08), transparent 50%),
-      var(--card);
-    border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px;
-    box-shadow: 0 8px 24px rgba(15,23,42,.08);
-  }
-  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; align-items: end; }
-  .controls label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-  .controls select, .controls input[type="number"], .controls button {
-    width: 100%; padding: 10px 12px; background: #ffffff; color: var(--text);
-    border: 1px solid #cbd5e1; border-radius: 10px; outline: none;
-  }
-  .controls button {
-    background: linear-gradient(180deg, #60a5fa, #2563eb);
-    border: none; font-weight: 700; letter-spacing: .3px; cursor: pointer; transition: transform .06s ease; color: #ffffff;
-  }
-  .controls button:active { transform: translateY(1px); }
-
-  .flex-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-  .pill {
-    font-size: 12px; padding: 6px 10px; border-radius: 999px;
-    border: 1px solid #cfe0f8; background:#eff6ff; color: #1e3a8a;
-  }
-
-  .card { margin-top: 16px; }
-  .prompt { font-size: 14px; color: var(--muted); margin-bottom: 6px; display:flex; align-items:center; gap:8px; }
-  .q-word { font-size: 32px; font-weight: 800; letter-spacing: .4px; margin: 8px 0 2px; }
-  .q-sub { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
-
-  .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: stretch; }
-  input[type="text"] {
-    width: 100%; padding: 14px 14px; font-size: 18px; border-radius: 12px;
-    border: 1px solid #cbd5e1; color: var(--text); background: #ffffff; outline: none;
-  }
-
-  .btn { padding: 12px 14px; border-radius: 12px; border: 1px solid #cbd5e1; background: #ffffff; color: var(--text); font-weight: 700; cursor: pointer; }
-  .btn.primary { background: linear-gradient(180deg, #60a5fa, #2563eb); border:none; color: #ffffff; }
-  .btn.ghost { background: transparent; }
-  .btn:disabled { opacity: .5; cursor: not-allowed; }
-
-  .actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-
-  .explain { margin-top: 14px; display: none; }
-  .explain.show { display: block; }
-  .explain h3 { margin: 0 0 8px; font-size: 15px; color: #1d4ed8; }
-  .explain p, .explain li { color: #1f2937; line-height: 1.6; }
-
-  .judge { margin-top: 8px; font-weight: 800; }
-  .ok { color: var(--accent); }
-  .ng { color: var(--danger); }
-
-  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
-
-  .progress { height: 10px; background: #ffffff; border:1px solid #e5e7eb; border-radius: 999px; overflow:hidden; margin-top: 12px; }
-  .progress > div { height: 100%; background: linear-gradient(90deg, #2563eb, #0ea5e9); width: 0%; }
-
-  .result-card { margin-top: 16px; }
-  table { width: 100%; border-collapse: collapse; }
-  th, td { border-bottom: 1px dashed #e5e7eb; padding: 8px 6px; text-align: left; }
-  tr.miss td { background: rgba(239, 68, 68, .06); }
-
-  footer { padding: 18px; text-align: center; color: var(--muted); font-size: 12px; border-top:1px solid #e5e7eb; background:#ffffff80; }
-  a { color: #2563eb; }
-  .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 2px 6px; border:1px solid #cbd5e1; border-radius:6px; }
-  .hint { color: #1e40af; }
-</style>
-
+    <style>
+        /* Custom styles */
+        body {
+            font-family: 'Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
+            background-color: #f0f9ff; /* light blue background */
+        }
+        .tab-button {
+            transition: all 0.3s ease;
+        }
+        .tab-button.active {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+            border-bottom-width: 4px;
+            border-color: #1d4ed8; /* blue-700 */
+        }
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.875rem;
+        }
+        .fill-in-blank-input {
+            border: 2px dashed #9ca3af;
+            background-color: #f9fafb;
+            text-align: center;
+            width: 100px;
+            border-radius: 6px;
+            margin: 0 4px;
+        }
+        .fill-in-blank-input:focus {
+            outline: none;
+            border-style: solid;
+            border-color: #3b82f6;
+        }
+        /* For smooth tab transition */
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .speak-btn {
+            cursor: pointer;
+            color: #6b7280; /* gray-500 */
+        }
+        .speak-btn:hover {
+            color: #3b82f6; /* blue-500 */
+        }
+    </style>
 </head>
-<body>
-  <header>
-    <div class="wrap">
-      <h1>Capoeira Português Trainer</h1>
-      <div class="sub">カポエイラで使うポルトガル語を、クイズ形式＋音声で学習できます。テスト／練習モード、解説・例文つき。</div>
+<body class="text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-blue-600">Capoeira-Português Learning</h1>
+            <p class="text-gray-500 mt-2">カポエイラで使うポルトガル語をマスターしよう！</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="flex justify-center border-b-2 border-gray-200 mb-8">
+            <button id="tab-btn-quiz" class="tab-button flex-1 md:flex-none md:px-8 py-4 text-lg font-semibold text-gray-600 border-b-4 border-transparent" onclick="switchTab('quiz')">
+                <i class="fas fa-question-circle mr-2"></i>単語クイズ
+            </button>
+            <button id="tab-btn-conversation" class="tab-button flex-1 md:flex-none md:px-8 py-4 text-lg font-semibold text-gray-600 border-b-4 border-transparent" onclick="switchTab('conversation')">
+                <i class="fas fa-comments mr-2"></i>会話トレーニング
+            </button>
+        </div>
+
+        <!-- Tab Content -->
+        <main>
+            <!-- Quiz Tab -->
+            <div id="tab-content-quiz" class="tab-content">
+                <!-- Quiz Setup Screen -->
+                <div id="quiz-setup" class="card p-8 text-center">
+                    <h2 class="text-2xl font-bold mb-6">クイズ設定</h2>
+                    <div class="space-y-6">
+                        <div>
+                            <label for="quiz-set" class="block mb-2 font-semibold">問題セット:</label>
+                            <select id="quiz-set" class="w-full max-w-xs p-2 border rounded-md shadow-sm">
+                                <option value="vol1">Vol. 1</option>
+                                <option value="vol2">Vol. 2</option>
+                                <option value="vol3">Vol. 3</option>
+                                <option value="mix">ミックス (Vol. 1-3)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="quiz-type" class="block mb-2 font-semibold">出題形式:</label>
+                            <select id="quiz-type" class="w-full max-w-xs p-2 border rounded-md shadow-sm">
+                                <option value="meaning">ポルトガル語 → 日本語（意味）</option>
+                                <option value="spelling">日本語 → ポルトガル語（スペル）</option>
+                                <option value="fill-in-blank">穴埋め問題</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="start-quiz-btn" class="btn btn-primary mt-8 text-lg">
+                        <i class="fas fa-play-circle mr-2"></i>クイズ開始
+                    </button>
+                </div>
+
+                <!-- Quiz Main Screen -->
+                <div id="quiz-main" class="hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <p id="quiz-progress" class="font-semibold"></p>
+                        <button id="quit-quiz-btn" class="text-gray-500 hover:text-red-500 transition-colors">
+                            <i class="fas fa-times-circle mr-1"></i>やめる
+                        </button>
+                    </div>
+                    <div class="card p-8">
+                        <div id="question-area" class="text-center mb-6">
+                            <p id="question-label" class="text-sm text-gray-500 mb-2"></p>
+                            <div class="flex justify-center items-center gap-4">
+                               <p id="question-text" class="text-3xl font-bold"></p>
+                               <i id="speak-question-main-btn" class="fas fa-volume-up speak-btn text-2xl"></i>
+                            </div>
+                            <p id="fill-in-blank-hint" class="text-gray-600 mt-2"></p>
+                        </div>
+                        <div class="flex items-center justify-center">
+                            <input type="text" id="answer-input" class="w-full max-w-md p-3 text-lg border-2 border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500 transition" placeholder="答えを入力..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                            <button id="submit-answer-btn" class="btn btn-primary ml-2">決定</button>
+                        </div>
+                        <div id="feedback-area" class="mt-6 text-center hidden">
+                            <p id="feedback-text" class="text-2xl font-bold"></p>
+                            <div id="explanation-area" class="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 text-left">
+                                <p><strong id="correct-answer-text"></strong></p>
+                                <p id="explanation-text" class="mt-2 text-gray-700"></p>
+                                <div class="flex items-center mt-2">
+                                    <p id="example-sentence-text" class="italic text-gray-700"></p>
+                                    <i id="speak-example-btn" class="fas fa-volume-up speak-btn ml-3"></i>
+                                </div>
+                            </div>
+                            <button id="next-question-btn" class="btn btn-primary mt-6">次の問題へ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quiz Results Screen -->
+                <div id="quiz-results" class="hidden text-center">
+                    <div class="card p-8">
+                        <h2 class="text-2xl font-bold mb-2">結果発表</h2>
+                        <p id="score-text" class="text-4xl font-bold text-blue-600 mb-6"></p>
+                        <div id="mistakes-list" class="text-left">
+                            <h3 class="font-bold text-xl mb-4">間違えた問題</h3>
+                            <!-- Incorrect answers will be populated here -->
+                        </div>
+                        <div class="mt-8">
+                            <button id="restart-quiz-btn" class="btn btn-primary">もう一度挑戦</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversation Tab -->
+            <div id="tab-content-conversation" class="tab-content">
+                <div class="card p-6">
+                    <div class="flex flex-col md:flex-row gap-4 mb-6 justify-center items-center">
+                        <div class="flex items-center">
+                           <label for="conversation-category" class="font-semibold self-center mr-2">カテゴリ:</label>
+                           <select id="conversation-category" class="p-2 border rounded-md shadow-sm">
+                               <!-- Options will be populated by JS -->
+                           </select>
+                        </div>
+                        <button id="cycle-view-btn" class="btn btn-secondary btn-sm">
+                            <!-- Button text will be populated by JS -->
+                        </button>
+                    </div>
+                    <div id="conversation-display" class="space-y-4">
+                        <!-- Conversation items will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Message Box for alerts -->
+        <div id="message-box" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full text-center">
+                <p id="message-text" class="mb-4 text-lg"></p>
+                <button id="message-ok-btn" class="btn btn-primary">OK</button>
+            </div>
+        </div>
+
     </div>
-  </header>
 
-  <main class="wrap">
-    <section class="controls">
-      <div>
-        <label>出題セット</label>
-        <select id="sel-volume">
-          <option value="v1">Vol.1</option>
-          <option value="v2">Vol.2</option>
-          <option value="v3">Vol.3</option>
-          <option value="mix" selected>ミックス（全部）</option>
-        </select>
-      </div>
-      <div>
-        <label>モード</label>
-        <select id="sel-mode">
-          <option value="practice" selected>練習（即時フィードバック）</option>
-          <option value="exam">テスト（最後に採点）</option>
-        </select>
-      </div>
-      <div>
-        <label>問題数</label>
-        <input id="num-qs" type="number" min="5" max="60" step="1" value="15" />
-      </div>
-      <div>
-        <label>&nbsp;</label>
-        <button id="btn-start">▶ 学習開始</button>
-      </div>
-      <div class="grid-2" style="grid-column: 1 / -1;">
-        <label><input type="checkbox" id="chk-reading-katakana" checked /> 読み問題はカタカナ入力を要求</label>
-        <label><input type="checkbox" id="chk-audio-auto" /> 正解後に例文を自動で読み上げ</label>
-      </div>
-    </section>
+    <script>
+    // ===================================================================================
+    // DATA SECTION
+    // ここにクイズの問題や会話のデータを追加・編集できます。
+    // ===================================================================================
 
-    <section id="quiz" class="card" style="display:none">
-      <div class="flex-row">
-        <span class="pill" id="pill-vol"></span>
-        <span class="pill" id="pill-kind"></span>
-        <span class="pill" id="pill-no"></span>
-      </div>
-      <div class="prompt" id="prompt"></div>
-      <div class="q-word" id="qword"></div>
-      <div class="q-sub" id="qsub"></div>
+    // --- クイズデータ ---
+    const quizData = {
+        vol1: [
+            { portuguese: 'carrinho', japanese: 'カヒーニョ（小さな車、カポエイラの動き）', reading: 'カヒーニョ', explanation: '語頭のr、語中のrrはハ行の音。nhは「ニャ行」の音になります。カポエイラでは低い姿勢で移動する動きの名前です。', exampleSentence: 'Faça o carrinho para passar por baixo.', fillInBlank: { question: 'ca___inho', answer: 'rrh' } },
+            { portuguese: 'bolsa', japanese: 'カバン', reading: 'ボウサ', explanation: '母音と子音に挟まれたLは「ウ」のように発音されます。', exampleSentence: 'Minha bolsa de capoeira é pesada.', fillInBlank: { question: 'bo___sa', answer: 'l' } },
+            { portuguese: 'real', japanese: 'レアル（ブラジルの通貨）', reading: 'ヘアウ', explanation: '語頭のrはハ行の音、語末のlは「ウ」の音になります。', exampleSentence: 'Um pão de queijo custa três reais.', fillInBlank: { question: '___al', answer: 're' } },
+            { portuguese: 'quinze', japanese: '15', reading: 'キンズィ', explanation: 'quiは「キ」と発音します。', exampleSentence: 'A aula começa em quinze minutos.', fillInBlank: { question: '___nze', answer: 'qui' } },
+            { portuguese: 'ritmo', japanese: 'リズム', reading: 'ヒットモ', explanation: 'カポエイラの音楽やジョーゴ（ゲーム）に合わせるための重要な要素です。', exampleSentence: 'Siga o ritmo do berimbau.', fillInBlank: { question: '___tmo', answer: 'ri' } },
+            { portuguese: 'respeito', japanese: '敬意', reading: 'ヘスペイト', explanation: 'カポエイラにおいて、メストレ（先生）や仲間、伝統に対する敬意は非常に大切です。', exampleSentence: 'Tenha respeito pelo seu mestre.', fillInBlank: { question: 'res___ito', answer: 'pe' } },
+            { portuguese: 'regional', japanese: 'ヘジオナウ（地域の）', reading: 'ヘジオナウ', explanation: 'Mestre Bimbaが創設したカポエイラのスタイル「Capoeira Regional」を指します。', exampleSentence: 'Eu treino Capoeira Regional.', fillInBlank: { question: 'regio___', answer: 'nal' } },
+            { portuguese: 'mais uma vez', japanese: 'もう一回', reading: 'マイス ウマ ヴェス', explanation: '練習中によく使われるフレーズです。', exampleSentence: 'Vamos, mais uma vez!', fillInBlank: { question: 'mais uma ___', answer: 'vez' } },
+            { portuguese: 'devagar', japanese: 'ゆっくり', reading: 'デヴァガール', explanation: '動きを正確に学ぶために、ゆっくり練習することは大切です。', exampleSentence: 'Faça o movimento devagar.', fillInBlank: { question: 'deva___', answer: 'gar' } },
+            { portuguese: 'tudo bem', japanese: '元気です、大丈夫です', reading: 'トゥード ベン', explanation: '挨拶でよく使われる表現。「Oi, tudo bem?」のように使います。', exampleSentence: 'Oi, tudo bem? - Tudo bem!', fillInBlank: { question: 'tudo ___', answer: 'bem' } },
+            { portuguese: 'parabéns', japanese: 'おめでとう', reading: 'パラベンス', explanation: '誕生日やバチザード（昇段式）で使います。', exampleSentence: 'Parabéns pela sua nova corda!', fillInBlank: { question: 'para___', answer: 'béns' } },
+            { portuguese: 'vinte', japanese: '20', reading: 'ヴィンチ', explanation: '数字の20。体力トレーニングで回数を数える時などに出てきます。', exampleSentence: 'Vamos fazer vinte flexões.', fillInBlank: { question: 'vin___', answer: 'te' } },
+            { portuguese: 'direita', japanese: '右', reading: 'ジレイタ', explanation: '動きの方向を指示する時に使います。', exampleSentence: 'Ginga para a direita.', fillInBlank: { question: 'di___ita', answer: 're' } },
+            { portuguese: 'esquerda', japanese: '左', reading: 'エスケルダ', explanation: '動きの方向を指示する時に使います。', exampleSentence: 'Esquiva para a esquerda.', fillInBlank: { question: 'es___rda', answer: 'que' } },
+            { portuguese: 'faca', japanese: 'ナイフ', reading: 'ファッカ', explanation: 'カポエイラの歌には、武器に関する言葉が登場することがあります。', exampleSentence: 'A letra da música fala sobre uma faca.', fillInBlank: { question: 'fa___', answer: 'ca' } },
+            { portuguese: 'corrido', japanese: 'コヒード（カポエイラの歌の形式）', reading: 'コヒード', explanation: 'コールアンドレスポンス形式の短い歌のことです。', exampleSentence: 'Vamos cantar um corrido agora.', fillInBlank: { question: 'co___ido', answer: 'rr' } },
+            { portuguese: 'quadra', japanese: 'クアドラ（カポエイラの歌の形式）', reading: 'クアドラ', explanation: '4行詩からなる歌の形式です。', exampleSentence: 'Essa música é uma quadra.', fillInBlank: { question: '___dra', answer: 'qua' } },
+            { portuguese: 'vermelho', japanese: '赤', reading: 'ヴェルメーリョ', explanation: '色の名前。lhは「リャ行」の音になります。', exampleSentence: 'A corda do mestre é vermelha.', fillInBlank: { question: 'verme___o', answer: 'lh' } }
+        ],
+        vol2: [
+            { portuguese: 'xaréu', japanese: 'シャレウ（魚の名前）', reading: 'シャレウ', explanation: 'xは「シャ行」の音。カポエイラの歌によく出てくる魚の名前です。', exampleSentence: 'Na maré, eu vi um xaréu.', fillInBlank: { question: '___réu', answer: 'xa' } },
+            { portuguese: 'chapéu', japanese: '帽子', reading: 'シャペウ', explanation: 'chは「シャ行」の音。「chapéu de couro（革の帽子）」という技があります。', exampleSentence: 'Ele usa um chapéu de couro.', fillInBlank: { question: 'cha___u', answer: 'pé' } },
+            { portuguese: 'sequência', japanese: '連続、一連の動き', reading: 'セクェンスィア', explanation: 'queは「クェ」と発音。技を連続して行う練習を指します。', exampleSentence: 'Vamos treinar a sequência de Mestre Bimba.', fillInBlank: { question: 'se___ncia', answer: 'quê' } },
+            { portuguese: 'dendê', japanese: 'デンデ油、気迫', reading: 'デンデー', explanation: 'バイーア料理に使われるアブラヤシの油。カポエイラでは「気迫」や「エネルギー」といった意味でも使われます。', exampleSentence: 'Jogue com dendê!', fillInBlank: { question: 'den___', answer: 'dê' } },
+            { portuguese: 'oi', japanese: 'やあ', reading: 'オイ', explanation: '英語のHiにあたる、気軽な挨拶です。', exampleSentence: 'Oi, galera!', fillInBlank: { question: 'o___', answer: 'i' } },
+            { portuguese: 'queixo', japanese: 'あご', reading: 'ケイショ', explanation: 'Queixada（ケイシャーダ）という蹴り技は「あごへの蹴り」という意味です。', exampleSentence: 'Cuidado com o queixo.', fillInBlank: { question: 'quei___', answer: 'xo' } },
+            { portuguese: 'cabeça', japanese: '頭', reading: 'カベッサ', explanation: 'Cabeçada（カベサーダ）は頭突きのことです。', exampleSentence: 'Proteja sua cabeça.', fillInBlank: { question: 'ca___ça', answer: 'be' } },
+            { portuguese: 'cotovelo', japanese: 'ひじ', reading: 'コトヴェーロ', explanation: 'Cotovelada（コトヴェラーダ）は肘打ちです。', exampleSentence: 'Ele usou o cotovelo na defesa.', fillInBlank: { question: 'coto___lo', answer: 've' } },
+            { portuguese: 'joelho', japanese: 'ひざ', reading: 'ジョエーリョ', explanation: 'Joelhada（ジョエリャーダ）は膝蹴りです。', exampleSentence: 'Dobre o joelho para a ginga.', fillInBlank: { question: 'joe___o', answer: 'lh' } },
+            { portuguese: 'quinto', japanese: '5番目の', reading: 'キント', explanation: '序数。順番を表すときに使います。', exampleSentence: 'Ele é o quinto da fila.', fillInBlank: { question: '___nto', answer: 'qui' } },
+            { portuguese: 'Que legal!', japanese: 'いいね！、すごい！', reading: 'キ レガウ', explanation: 'ポジティブな感情を表す、非常によく使う口語表現です。', exampleSentence: 'Você aprendeu aú? Que legal!', fillInBlank: { question: 'Que ___!', answer: 'legal' } },
+            { portuguese: 'Tchau', japanese: 'バイバイ', reading: 'チャウ', explanation: '別れ際の挨拶。イタリア語が語源です。', exampleSentence: 'Tchau, até amanhã!', fillInBlank: { question: '___au', answer: 'Tch' } },
+            { portuguese: 'jogo', japanese: 'ゲーム、試合', reading: 'ジョーゴ', explanation: 'カポエイラのホーダの中で2人が行う攻防のこと。', exampleSentence: 'Vamos fazer um bom jogo.', fillInBlank: { question: 'jo___', answer: 'go' } },
+            { portuguese: 'Salvador', japanese: 'サルヴァドール', reading: 'サウヴァドール', explanation: 'ブラジル・バイーア州の州都で、カポエイラが深く根付いている都市です。', exampleSentence: 'Mestre Bimba nasceu em Salvador.', fillInBlank: { question: 'Salva___', answer: 'dor' } },
+            { portuguese: 'Bahia', japanese: 'バイーア', reading: 'バイーア', explanation: 'ブラジル北東部の州。アフリカ文化の影響が強く、カポエイラ発祥の地とされています。', exampleSentence: 'Capoeira nasceu na Bahia.', fillInBlank: { question: 'Ba___a', answer: 'hi' } },
+            { portuguese: 'Igreja do Bonfim', japanese: 'ボンフィン教会', reading: 'イグレージャ ド ボンフィン', explanation: 'サルヴァドールにある有名な教会。願いが叶うと言われるリボン（Fita）が有名です。', exampleSentence: 'Amarre a fita do Bonfim no seu pulso.', fillInBlank: { question: 'Igreja do ___', answer: 'Bonfim' } },
+            { portuguese: 'peixe', japanese: '魚', reading: 'ペイシ', explanation: 'カポエイラの歌には、海や魚に関するものが多くあります。', exampleSentence: 'O pescador pegou um peixe grande.', fillInBlank: { question: 'pei___', answer: 'xe' } }
+        ],
+        vol3: [
+            { portuguese: 'saúde', japanese: '健康、乾杯', reading: 'サウージ', explanation: '乾杯の音頭として最も一般的に使われます。「健康を祝して！」という意味です。', exampleSentence: 'Um brinde à capoeira! Saúde!', fillInBlank: { question: 'sa___de', answer: 'ú' } },
+            { portuguese: 'axé', japanese: 'アシェー（エネルギー、幸運）', reading: 'アシェー', explanation: 'ヨルバ語由来の言葉で、ポジティブなエネルギーや生命力、幸運を意味します。ホーダを盛り上げる大切な要素です。', exampleSentence: 'Essa roda tem muito axé!', fillInBlank: { question: 'a___é', answer: 'x' } },
+            { portuguese: 'minha', japanese: '私の（女性名詞に付く）', reading: 'ミーニャ', explanation: '所有代名詞。後に続く名詞が女性形の場合に使います。例: minha vida (私の人生)', exampleSentence: 'Essa é minha corda.', fillInBlank: { question: 'mi___a', answer: 'nh' } },
+            { portuguese: 'sinhô', japanese: '（昔の）ご主人様', reading: 'シニョー', explanation: 'Senhor（セニョール）が訛った形。奴隷制時代の歌によく登場します。', exampleSentence: 'A canção fala do sinhô de engenho.', fillInBlank: { question: 'si___ô', answer: 'nh' } },
+            { portuguese: 'galo', japanese: '雄鶏', reading: 'ガーロ', explanation: 'カポエイラの歌に登場する動物の一つです。', exampleSentence: 'O canto do galo anunciou o dia.', fillInBlank: { question: 'ga___', answer: 'lo' } },
+            { portuguese: 'açúcar', japanese: '砂糖', reading: 'アスーカル', explanation: 'ブラジルの歴史、特に奴隷制と深く関わりのある産物です。サトウキビプランテーションが舞台の歌も多いです。', exampleSentence: 'O Brasil foi um grande produtor de açúcar.', fillInBlank: { question: 'açú___', answer: 'car' } },
+            { portuguese: 'escravo', japanese: '奴隷', reading: 'エスクラーヴォ', explanation: 'カポエイラの歴史を語る上で避けては通れない言葉です。', exampleSentence: 'Capoeira era uma luta dos escravos.', fillInBlank: { question: 'es___vo', answer: 'cra' } },
+            { portuguese: 'cinquenta', japanese: '50', reading: 'シンクエンタ', explanation: '数字の50。', exampleSentence: 'Ele tem cinquenta anos.', fillInBlank: { question: 'cin___nta', answer: 'que' } },
+            { portuguese: 'feliz', japanese: '幸せな', reading: 'フェリース', explanation: '感情を表す言葉。', exampleSentence: 'Estou feliz de treinar com vocês.', fillInBlank: { question: 'fe___', answer: 'liz' } },
+            { portuguese: 'meu', japanese: '私の（男性名詞に付く）', reading: 'メウ', explanation: '所有代名詞。後に続く名詞が男性形の場合に使います。例: meu mestre (私の先生)', exampleSentence: 'Ele é meu amigo.', fillInBlank: { question: 'm___u', answer: 'e' } },
+            { portuguese: 'furacão', japanese: '竜巻', reading: 'フラカォン', explanation: 'ある有名なカポエイリスタのアペリード（ニックネーム）でもあります。', exampleSentence: 'O movimento dele é rápido como um furacão.', fillInBlank: { question: 'fura___', answer: 'cão' } },
+            { portuguese: 'azul', japanese: '青', reading: 'アズー', explanation: '色の名前。団体の帯の色などにも使われます。', exampleSentence: 'A bandeira do Brasil é verde, amarela, azul e branca.', fillInBlank: { question: 'a___l', answer: 'zu' } },
+            { portuguese: 'atabaque', japanese: 'アタバキ（太鼓）', reading: 'アタバキ', explanation: 'カポエイラの楽器隊（バテリア）で使われる、背の高い太鼓。', exampleSentence: 'O som do atabaque marca o ritmo.', fillInBlank: { question: 'ata___que', answer: 'ba' } },
+            { portuguese: 'baqueta', japanese: 'バケータ（ビリンバウのスティック）', reading: 'バケータ', explanation: 'ビリンバウを演奏するための細い棒のことです。', exampleSentence: 'Segure a baqueta com leveza.', fillInBlank: { question: 'ba___ta', answer: 'que' } },
+            { portuguese: 'casa', japanese: '家', reading: 'カーザ', explanation: '基本的な単語ですが、練習場所を指して使うこともあります。', exampleSentence: 'Vamos treinar em casa.', fillInBlank: { question: 'ca___', answer: 'sa' } },
+            { portuguese: 'Deus', japanese: '神', reading: 'デウス', explanation: '大文字で始まるとキリスト教の唯一神を指します。歌詞にもよく出てきます。', exampleSentence: 'Vá com Deus. (神と共にあれ → さようなら)', fillInBlank: { question: '___us', answer: 'De' } }
+        ]
+    };
 
-      <div class="row">
-        <input type="text" id="answer" placeholder="ここに解答を入力" autocomplete="off" />
-        <button id="btn-speak" class="btn" title="音声（pt-BR）">🔊 発音</button>
-      </div>
+    // --- 会話データ ---
+    const conversationData = [
+        {
+            category: "挨拶",
+            items: [
+                { japanese: "おはよう", portuguese: "Bom dia", context: "朝の挨拶", example: { speaker1: "Mestre: Bom dia, pessoal!", speaker2: "Aluno: Bom dia, Mestre!" }, fillInBlank: { sentence: "___ dia, pessoal!", answer: "Bom" } },
+                { japanese: "こんにちは", portuguese: "Boa tarde", context: "午後の挨拶", example: { speaker1: "Aluno: Boa tarde, galera!", speaker2: "Outro: Boa tarde! Vamos treinar." }, fillInBlank: { sentence: "Boa ___, galera!", answer: "tarde" } },
+                { japanese: "こんばんは/おやすみ", portuguese: "Boa noite", context: "夜の挨拶", example: { speaker1: "Mestre: Boa noite e até amanhã.", speaker2: "Aluno: Boa noite, Mestre!" }, fillInBlank: { sentence: "Boa ___, e até amanhã.", answer: "noite" } },
+                { japanese: "やあ", portuguese: "Oi / Olá", context: "気軽な挨拶", example: { speaker1: "Aluno: Oi, tudo bem?", speaker2: "Outro: Oi! Tudo joia." }, fillInBlank: { sentence: "___, tudo bem?", answer: "Oi" } },
+                { japanese: "さようなら", portuguese: "Tchau / Adeus", context: "別れの挨拶", example: { speaker1: "Aluno: Tchau, pessoal!", speaker2: "Mestre: Tchau! Bom descanso." }, fillInBlank: { sentence: "___, pessoal!", answer: "Tchau" } },
+            ]
+        },
+        {
+            category: "状態・様子",
+            items: [
+                { japanese: "速い", portuguese: "Rápido", context: "動きの速さ", example: { speaker1: "Mestre: Mais rápido!", speaker2: "Aluno: Estou tentando!" }, fillInBlank: { sentence: "O jogo está muito ___.", answer: "rápido" } },
+                { japanese: "遅い", portuguese: "Devagar / Lento", context: "動きの速さ", example: { speaker1: "Mestre: Devagar, sinta o movimento.", speaker2: "Aluno: Entendi." }, fillInBlank: { sentence: "Faça a ginga mais ___.", answer: "lenta" } },
+                { japanese: "強い", portuguese: "Forte", context: "力の強さ", example: { speaker1: "Mestre: Que chute forte!", speaker2: "Aluno: Obrigado!" }, fillInBlank: { sentence: "Seu chute é muito ___.", answer: "forte" } },
+                { japanese: "美しい", portuguese: "Bonito / Belo", context: "動きの美しさ", example: { speaker1: "Mestre: Que movimento bonito!", speaker2: "Aluno: Valeu!" }, fillInBlank: { sentence: "Sua capoeira é muito ___.", answer: "bonita" } },
+                { japanese: "高い", portuguese: "Alto", context: "動きの高さ", example: { speaker1: "Mestre: Chute mais alto!", speaker2: "Aluno: Sim, mestre!" }, fillInBlank: { sentence: "Ele pulou bem ___.", answer: "alto" } },
+                { japanese: "低い", portuguese: "Baixo", context: "動きの低さ", example: { speaker1: "Mestre: Jogue mais baixo.", speaker2: "Aluno: Ok!" }, fillInBlank: { sentence: "Fique mais ___ na negativa.", answer: "baixo" } },
+                { japanese: "暑い", portuguese: "Quente", context: "気温", example: { speaker1: "Aluno: Hoje está muito quente!", speaker2: "Outro: Verdade, preciso de água." }, fillInBlank: { sentence: "Está muito ___ aqui.", answer: "quente" } },
+            ]
+        },
+        {
+            category: "動作",
+            items: [
+                { japanese: "回る", portuguese: "Girar / Rodar", context: "回転する動き", example: { speaker1: "Mestre: Gira sem perder o equilíbrio.", speaker2: "Aluno: Certo." }, fillInBlank: { sentence: "Vamos ___ para o outro lado.", answer: "girar" } },
+                { japanese: "動く", portuguese: "Mover / Mexer", context: "体を動かす", example: { speaker1: "Mestre: Mexe o corpo, não fique parado.", speaker2: "Aluno: Ok!" }, fillInBlank: { sentence: "Não pare de se ___.", answer: "mover" } },
+                { japanese: "蹴る", portuguese: "Chutar", context: "蹴り技", example: { speaker1: "Mestre: Chuta com mais força.", speaker2: "Aluno: Assim?" }, fillInBlank: { sentence: "Vou ___ a bola.", answer: "chutar" } },
+                { japanese: "避ける", portuguese: "Esquivar", context: "攻撃をかわす", example: { speaker1: "Mestre: Esquiva para o lado.", speaker2: "Aluno: Entendi." }, fillInBlank: { sentence: "Aprenda a ___ bem.", answer: "esquivar" } },
+                { japanese: "始める", portuguese: "Começar / Iniciar", context: "練習の開始", example: { speaker1: "Mestre: Vamos começar a roda.", speaker2: "Alunos: Vamos!" }, fillInBlank: { sentence: "A aula vai ___.", answer: "começar" } },
+            ]
+        },
+        {
+            category: "指示・応答",
+            items: [
+                { japanese: "質問があります", portuguese: "Tenho uma pergunta", context: "質問したいとき", example: { speaker1: "Aluno: Mestre, tenho uma pergunta.", speaker2: "Mestre: Pode falar." }, fillInBlank: { sentence: "Tenho uma ___.", answer: "pergunta" } },
+                { japanese: "わかりました", portuguese: "Entendi / Certo", context: "理解したとき", example: { speaker1: "Mestre: Faça a negativa.", speaker2: "Aluno: Entendi." }, fillInBlank: { sentence: "___, vou fazer isso.", answer: "Certo" } },
+                { japanese: "水を飲んでもいいですか？", portuguese: "Posso beber água?", context: "水分補給の許可を求める", example: { speaker1: "Aluno: Estou com sede. Posso beber água?", speaker2: "Mestre: Sim, mas volte rápido." }, fillInBlank: { sentence: "Posso beber ___?", answer: "água" } },
+                { japanese: "もう一度お願いします", portuguese: "De novo, por favor", context: "繰り返してほしいとき", example: { speaker1: "Aluno: Não entendi. De novo, por favor.", speaker2: "Mestre: Claro." }, fillInBlank: { sentence: "___, por favor.", answer: "De novo" } },
+            ]
+        },
+        {
+            category: "乾杯",
+            items: [
+                { japanese: "乾杯！", portuguese: "Saúde!", context: "打ち上げなどで", example: { speaker1: "Mestre: Um brinde a todos! Saúde!", speaker2: "Alunos: Saúde!" }, fillInBlank: { sentence: "Um brinde à amizade! ___!", answer: "Saúde" } },
+            ]
+        }
+    ];
 
-      <div class="actions">
-        <button id="btn-check" class="btn primary">解答する</button>
-        <button id="btn-skip" class="btn">スキップ</button>
-        <button id="btn-show" class="btn ghost">解説を表示</button>
-        <button id="btn-next" class="btn" disabled>次へ</button>
-      </div>
+    // ===================================================================================
+    // APPLICATION LOGIC
+    // アプリの動作に関するコードです。通常は編集する必要はありません。
+    // ===================================================================================
 
-      <div id="judge" class="judge"></div>
+    // DOM Elements
+    const tabButtons = { quiz: document.getElementById('tab-btn-quiz'), conversation: document.getElementById('tab-btn-conversation') };
+    const tabContents = { quiz: document.getElementById('tab-content-quiz'), conversation: document.getElementById('tab-content-conversation') };
+    const quizSetup = document.getElementById('quiz-setup');
+    const quizMain = document.getElementById('quiz-main');
+    const quizResults = document.getElementById('quiz-results');
+    const startQuizBtn = document.getElementById('start-quiz-btn');
+    const quitQuizBtn = document.getElementById('quit-quiz-btn');
+    const quizSetSelect = document.getElementById('quiz-set');
+    const quizTypeSelect = document.getElementById('quiz-type');
+    const quizProgress = document.getElementById('quiz-progress');
+    const questionLabel = document.getElementById('question-label');
+    const questionText = document.getElementById('question-text');
+    const speakQuestionMainBtn = document.getElementById('speak-question-main-btn');
+    const fillInBlankHint = document.getElementById('fill-in-blank-hint');
+    const answerInput = document.getElementById('answer-input');
+    const submitAnswerBtn = document.getElementById('submit-answer-btn');
+    const feedbackArea = document.getElementById('feedback-area');
+    const feedbackText = document.getElementById('feedback-text');
+    const explanationArea = document.getElementById('explanation-area');
+    const correctAnswerText = document.getElementById('correct-answer-text');
+    const explanationText = document.getElementById('explanation-text');
+    const exampleSentenceText = document.getElementById('example-sentence-text');
+    const speakExampleBtn = document.getElementById('speak-example-btn');
+    const nextQuestionBtn = document.getElementById('next-question-btn');
+    const scoreText = document.getElementById('score-text');
+    const mistakesList = document.getElementById('mistakes-list');
+    const restartQuizBtn = document.getElementById('restart-quiz-btn');
+    const conversationCategorySelect = document.getElementById('conversation-category');
+    const conversationDisplay = document.getElementById('conversation-display');
+    const cycleViewBtn = document.getElementById('cycle-view-btn');
+    const messageBox = document.getElementById('message-box');
+    const messageText = document.getElementById('message-text');
+    const messageOkBtn = document.getElementById('message-ok-btn');
 
-      <div id="explain" class="explain">
-        <h3>解説 / Dica</h3>
-        <div id="explain-text"></div>
-        <h3 style="margin-top:12px">会話例 / Exemplo</h3>
-        <ul class="ex-list" id="examples"></ul>
-      </div>
+    // App State
+    let currentTab = 'quiz';
+    let quizState = { questions: [], currentIndex: 0, score: 0, mistakes: [], currentQuestion: null };
+    let synth = window.speechSynthesis;
+    let voices = [];
+    let conversationViewMode = 'portuguese'; // 'portuguese', 'japanese', 'full'
 
-      <div class="progress"><div id="bar"></div></div>
-    </section>
-
-    <section id="result" class="result-card" style="display:none">
-      <h2>結果</h2>
-      <p id="score"></p>
-      <div id="review"></div>
-      <div class="actions">
-        <button class="btn" id="btn-retry">同じ設定でもう一度</button>
-        <button class="btn" id="btn-home">設定に戻る</button>
-      </div>
-    </section>
-
-    <section class="card" style="margin-top:16px">
-      <details>
-        <summary><strong>使い方 & 仕様</strong></summary>
-        <ul>
-          <li>Vol.1〜3はアップロード頂いたアヴァリアソン（評価テスト）を元に作成。読み・意味・スペルの3形式を出題します。</li>
-          <li>入力は全角・半角・大文字小文字・アクセントを無視して採点（例：<span class="kbd">furacão</span> ⇒ <span class="kbd">FURACAO</span>もOK）。</li>
-          <li>音声はブラウザの <code>SpeechSynthesis</code> を使用（ポルトガル語(ブラジル)の音声がある場合に再生）。</li>
-          <li>練習モードでは即時採点＋解説を表示。テストモードでは最後に一覧レビューが表示されます。</li>
-        </ul>
-      </details>
-    </section>
-  </main>
-
-  <footer>
-    Made for Capoeira study • Web Speech API を使用（音声の有無は端末依存） • © você
-  </footer>
-
-<script>
-// ===== Utility: normalize strings (ignore case/accents) =====
-const normalize = (s) => s
-  .toString()
-  .trim()
-  .normalize('NFD')
-  .replace(/[\u0300-\u036f]/g, '') // strip accents
-  .replace(/\s+/g, ' ')
-  .toLowerCase();
-
-const isKatakana = (s) => /[\u30A0-\u30FF]/.test(s);
-
-// SpeechSynthesis helpers
-function speak(text, lang='pt-BR') {
-  const u = new SpeechSynthesisUtterance(text);
-  const voice = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith(lang.toLowerCase()));
-  if (voice) u.voice = voice; else u.lang = lang; 
-  u.rate = 0.95; u.pitch = 1.0; u.volume = 1.0;
-  speechSynthesis.cancel();
-  speechSynthesis.speak(u);
-}
-
-// ===== Dataset (from the provided tests; added examples & explanations) =====
-// key fields: id, vol, kind ('reading'|'meaning'|'spelling'), q, a (array of accepted answers),
-// speak: text to pronouce, explain: html, examples: [{pt, ja}]
-
-const DATA = [
-  // ------------ Vol.1 --------------
-  {id:'v1-read-carrinho', vol:'v1', kind:'reading', q:'carrinho', a:['カヒーニョ','カヒーニョー'], speak:'carrinho',
-    explain:'語頭の <b>r</b> と語中の <b>rr</b> は「ハ行」に近い音。<b>nh</b> は「ニャ」。',
-    examples:[{pt:'Leve o carrinho devagar.', ja:'台車をゆっくり押して。'}]},
-  {id:'v1-read-bolsa', vol:'v1', kind:'reading', q:'bolsa', a:['ボウサ','ボウザ','ボルサ'], speak:'bolsa',
-    explain:'語中や語末の <b>l</b> は「ウ」に近い。地域や話者で<b>ボルサ</b>と聞こえる場合も。',
-    examples:[{pt:'Guarde a bolsa no vestiário.', ja:'かばんは更衣室にしまって。'}]},
-  {id:'v1-read-real', vol:'v1', kind:'reading', q:'real', a:['ヘアウ','ヘアウー'], speak:'real',
-    explain:'通貨名。語頭の <b>r</b> は「ハ」音、語末の <b>l</b> は「ウ」。',
-    examples:[{pt:'A mensalidade é vinte reais.', ja:'月謝は20ヘアウです。'}]},
-  {id:'v1-read-quinze', vol:'v1', kind:'reading', q:'quinze', a:['キンズィ','キンジ'], speak:'quinze',
-    explain:'<b>qu</b> は「キ」/「クィ」。この語は「キンジ」に近い音（地域差あり）。',
-    examples:[{pt:'Começamos às quinze horas.', ja:'15時に始めます。'}]},
-
-  {id:'v1-mean-ritmo', vol:'v1', kind:'meaning', q:'ritmo', a:['リズム','拍子'], speak:'ritmo',
-    explain:'練習中にもよく出る語。<b>ritmo</b> はジンガや歌の「ノリ」を指すことも。',
-    examples:[{pt:'Sinta o ritmo do berimbau.', ja:'ビリンバウのリズムを感じて。'}]},
-  {id:'v1-mean-respeito', vol:'v1', kind:'meaning', q:'respeito', a:['敬意','尊重'], speak:'respeito',
-    explain:'先生や仲間、ホーダへの<b>敬意</b>。挨拶やマナー全般にも使う言葉。',
-    examples:[{pt:'Mostre respeito ao parceiro.', ja:'相手に敬意を示そう。'}]},
-  {id:'v1-mean-regional', vol:'v1', kind:'meaning', q:'regional', a:['地域の','レジオナウ','ヘジオナウ'], speak:'regional',
-    explain:'一般語としては「地域の」。文脈によっては「カポエイラ・ヘジオナウ（Regional）」流派も。',
-    examples:[{pt:'Treino regional hoje à noite.', ja:'今夜はヘジオナウの練習。'}]},
-  {id:'v1-mean-maisumavez', vol:'v1', kind:'meaning', q:'mais uma vez', a:['もう一回','もう一度'], speak:'mais uma vez',
-    explain:'練習でよく聞く指示。「<span class="hint">もう一回！</span>」',
-    examples:[{pt:'Faz a sequência mais uma vez!', ja:'もう一回そのシークエンスやって！'}]},
-  {id:'v1-mean-devagar', vol:'v1', kind:'meaning', q:'devagar', a:['ゆっくり','ゆっくりと'], speak:'devagar',
-    explain:'スピード調整の基本語。',
-    examples:[{pt:'Vamos devagar primeiro.', ja:'まずはゆっくり行こう。'}]},
-  {id:'v1-mean-tudobem', vol:'v1', kind:'meaning', q:'tudo bem', a:['元気です','大丈夫です','調子いいよ'], speak:'tudo bem',
-    explain:'挨拶の定番。「Tudo bem? — Tudo.」',
-    examples:[{pt:'Oi! Tudo bem?', ja:'やあ！元気？'}]},
-  {id:'v1-mean-parabens', vol:'v1', kind:'meaning', q:'parabéns', a:['おめでとう','おめでとうございます'], speak:'parabéns',
-    explain:'帯の昇格や勝利を祝う言葉。',
-    examples:[{pt:'Parabéns pela graduação!', ja:'昇級おめでとう！'}]},
-  {id:'v1-mean-vinte', vol:'v1', kind:'meaning', q:'vinte', a:['20','２０','二十'], speak:'vinte',
-    explain:'数詞の練習にも。',
-    examples:[{pt:'Vinte minutos de alongamento.', ja:'ストレッチ20分。'}]},
-
-  {id:'v1-spell-right', vol:'v1', kind:'spelling', q:'右', a:['direita'], speak:'direita',
-    explain:'左右はカポエイラで頻出。', examples:[{pt:'Ginga para a direita.', ja:'右にジンガして。'}]},
-  {id:'v1-spell-left', vol:'v1', kind:'spelling', q:'左', a:['esquerda'], speak:'esquerda',
-    explain:'<b>esq</b> のつづりに注意。', examples:[{pt:'Esquiva para a esquerda.', ja:'左にエスキーヴァ。'}]},
-  {id:'v1-spell-knife', vol:'v1', kind:'spelling', q:'ナイフ', a:['faca'], speak:'faca',
-    explain:'キメの語彙も少し。', examples:[{pt:'Não traga faca para o treino.', ja:'稽古にナイフは持ってこないでね。'}]},
-  {id:'v1-spell-corrido', vol:'v1', kind:'spelling', q:'コヒード（歌の種類）', a:['corrido'], speak:'corrido',
-    explain:'歌の形式の一つ。<b>Corridos</b> はコール＆レスポンス。', examples:[{pt:'Vamos cantar um corrido!', ja:'コヒードを歌おう！'}]},
-  {id:'v1-spell-quadra', vol:'v1', kind:'spelling', q:'クアドラ（体育館コート）', a:['quadra'], speak:'quadra',
-    explain:'練習場所でよく使う語。', examples:[{pt:'A quadra está livre hoje.', ja:'今日はコート空いてるよ。'}]},
-  {id:'v1-spell-red', vol:'v1', kind:'spelling', q:'赤', a:['vermelho','vermelha'], speak:'vermelho',
-    explain:'形容詞は語尾が性数で変化。', examples:[{pt:'Berimbau vermelho.', ja:'赤いビリンバウ。'}]},
-
-  // ------------ Vol.2 --------------
-  {id:'v2-read-xareu', vol:'v2', kind:'reading', q:'xaréu', a:['シャレウ'], speak:'xaréu',
-    explain:'<b>x</b> は読みが多様。この語では「シャ」。', examples:[{pt:'Xaréu é um peixe.', ja:'シャレウは魚の一種。'}]},
-  {id:'v2-read-chapeu', vol:'v2', kind:'reading', q:'chapéu', a:['シャペウ'], speak:'chapéu',
-    explain:'<b>ch</b> は「シャ」。<b>éu</b> の鼻にかからない二重母音にも注意。', examples:[{pt:'Tire o chapéu na roda.', ja:'ホーダでは帽子を脱ごう。'}]},
-  {id:'v2-read-sequencia', vol:'v2', kind:'reading', q:'sequência', a:['セクェンスィア','セクエンシア'], speak:'sequência',
-    explain:'2009年の正書法以降、<b>qüe</b> の分音記号tremaは廃止。ただし発音習慣は継承される（「セクェ…」）。',
-    examples:[{pt:'Repete a sequência de golpes.', ja:'技の連携（シークエンス）をもう一度。'}]},
-  {id:'v2-read-dende', vol:'v2', kind:'reading', q:'dendê', a:['デンデー'], speak:'dendê',
-    explain:'語末にアクセントがある「デンデー」。バイーア料理に欠かせないパーム油。',
-    examples:[{pt:'Acarajé leva azeite de dendê.', ja:'アカラジェにはデンデ油を使う。'}]},
-
-  {id:'v2-mean-oi', vol:'v2', kind:'meaning', q:'oi', a:['やあ','こんにちは','おーい'], speak:'oi',
-    explain:'カジュアルな挨拶。', examples:[{pt:'Oi, gente!', ja:'やあ、みんな！'}]},
-  {id:'v2-mean-queixo', vol:'v2', kind:'meaning', q:'queixo', a:['あご'], speak:'queixo',
-    explain:'受け身やガードの指示で頻出。', examples:[{pt:'Protege o queixo.', ja:'あごを守って。'}]},
-  {id:'v2-mean-cabeca', vol:'v2', kind:'meaning', q:'cabeça', a:['頭','あたま'], speak:'cabeça',
-    explain:'センサーのように常に相手を「見る」意識。', examples:[{pt:'Mexe a cabeça no esquiva.', ja:'エスキーヴァで頭を動かして。'}]},
-  {id:'v2-mean-cotovelo', vol:'v2', kind:'meaning', q:'cotovelo', a:['ひじ','肘'], speak:'cotovelo',
-    explain:'接近戦での距離感にも。', examples:[{pt:'Não use o cotovelo aqui.', ja:'ここでは肘は使わないよ。'}]},
-  {id:'v2-mean-joelho', vol:'v2', kind:'meaning', q:'joelho', a:['ひざ','膝'], speak:'joelho',
-    explain:'アウーやメイア・ルーアで膝を守る。', examples:[{pt:'Dobre o joelho.', ja:'膝を曲げて。'}]},
-  {id:'v2-mean-quinto', vol:'v2', kind:'meaning', q:'quinto(a)', a:['5番目の','五番目の'], speak:'quinto',
-    explain:'序数詞。性一致に注意（o/a）。', examples:[{pt:'Ele é o quinto da fila.', ja:'彼は列の5番目。'}]},
-  {id:'v2-mean-quelegal', vol:'v2', kind:'meaning', q:'Que legal!', a:['いいね','いいね！','いいじゃん','素敵'], speak:'Que legal!',
-    explain:'称賛のひとこと。', examples:[{pt:'Que jogo bonito! Que legal!', ja:'いいジョーゴだね！いいね！'}]},
-  {id:'v2-mean-tchau', vol:'v2', kind:'meaning', q:'Tchau', a:['バイバイ','じゃあね','さようなら'], speak:'Tchau',
-    explain:'別れの挨拶。', examples:[{pt:'Tchau, até amanhã!', ja:'バイバイ、また明日！'}]},
-
-  {id:'v2-spell-jogo', vol:'v2', kind:'spelling', q:'ジョーゴ（試合／プレイ）', a:['jogo'], speak:'jogo',
-    explain:'カポエイラそのものを「jogo（ジョーゴ）」とも言う。', examples:[{pt:'Vamos fazer um jogo.', ja:'ジョーゴしよう。'}]},
-  {id:'v2-spell-corrido', vol:'v2', kind:'spelling', q:'コヒード（歌の種類）', a:['corrido'], speak:'corrido',
-    explain:'Vol.1と同じ語。反復で定着を。', examples:[{pt:'Canta um corrido clássico.', ja:'定番のコヒードを歌って。'}]},
-  {id:'v2-spell-salvador', vol:'v2', kind:'spelling', q:'サルヴァドール（地名）', a:['salvador','Salvador'], speak:'Salvador',
-    explain:'バイーア州の州都。発音は「サウヴァドール」に近い。', examples:[{pt:'Salvador tem muita capoeira.', ja:'サルヴァドールはカポエイラが盛ん。'}]},
-  {id:'v2-spell-bahia', vol:'v2', kind:'spelling', q:'バイーア（州名）', a:['bahia','Bahia'], speak:'Bahia',
-    explain:'「バヒーア」に近い音。', examples:[{pt:'Moro na Bahia.', ja:'私はバイーアに住んでいます。'}]},
-  {id:'v2-spell-bonfim', vol:'v2', kind:'spelling', q:'ボンフィン教会（略称）', a:['igreja do bonfim','igreja nosso senhor do bonfim','igreja de nosso senhor do bonfim'], speak:'Igreja do Bonfim',
-    explain:'正式は <i>Igreja Nosso Senhor do Bonfim</i>。略称も可。', examples:[{pt:'Vamos à Igreja do Bonfim.', ja:'ボンフィン教会へ行こう。'}]},
-  {id:'v2-spell-peixe', vol:'v2', kind:'spelling', q:'魚', a:['peixe'], speak:'peixe',
-    explain:'<b>ei</b> は「エイ」。<b>x</b> はここでは「シ」。', examples:[{pt:'Esse peixe é xaréu.', ja:'この魚はシャレウだよ。'}]},
-
-  // ------------ Vol.3 --------------
-  {id:'v3-read-saude', vol:'v3', kind:'reading', q:'saúde', a:['サウーヂ','サウージ'], speak:'saúde',
-    explain:'語末の <b>de</b> はブラジルでは「ヂ/ジ」に近い。<b>ú</b> は長め。乾杯の掛け声にも。',
-    examples:[{pt:'Saúde! Axé!', ja:'乾杯！アシェ！'}]},
-  {id:'v3-read-axe', vol:'v3', kind:'reading', q:'axé', a:['アシェ','アシェー'], speak:'axé',
-    explain:'<b>x</b> はここでは「シ」。<b>axé</b> は「良いエネルギー」。ホーダでの雰囲気そのもの。',
-    examples:[{pt:'Muito axé na roda hoje!', ja:'今日はホーダのアシェが最高！'}]},
-  {id:'v3-read-queixo', vol:'v3', kind:'reading', q:'queixo', a:['ケイショ'], speak:'queixo',
-    explain:'<b>que</b> は「ケ」。<b>x</b> はこの語では「シ」。', examples:[{pt:'Protege o queixo!', ja:'あごを守って！'}]},
-  {id:'v3-read-minha', vol:'v3', kind:'reading', q:'minha', a:['ミーニャ','ミニャ'], speak:'minha',
-    explain:'<b>nh</b> は「ニャ」。 possessivo（所有形容詞）。', examples:[{pt:'Minha camisa caiu.', ja:'私のシャツが落ちた。'}]},
-
-  {id:'v3-mean-sinho', vol:'v3', kind:'meaning', q:'sinhô', a:['男主人','ご主人'], speak:'sinhô',
-    explain:'本来は <b>senhor</b> の訛り。奴隷時代の語。', examples:[{pt:'O sinhô mandou chamar.', ja:'ご主人が呼んでいる。'}]},
-  {id:'v3-mean-galo', vol:'v3', kind:'meaning', q:'galo', a:['雄鶏','おんどり'], speak:'galo',
-    explain:'歌詞によく出る語。', examples:[{pt:'O galo cantou.', ja:'雄鶏が鳴いた。'}]},
-  {id:'v3-mean-acucar', vol:'v3', kind:'meaning', q:'açúcar', a:['砂糖'], speak:'açúcar',
-    explain:'サトウキビ農園の歴史と結びつく語。', examples:[{pt:'Sem açúcar, por favor.', ja:'砂糖抜きでお願いします。'}]},
-  {id:'v3-mean-escravo', vol:'v3', kind:'meaning', q:'escravo', a:['奴隷'], speak:'escravo',
-    explain:'ブラジルの歴史語彙として重要。', examples:[{pt:'História dos escravos no Brasil.', ja:'ブラジルの奴隷の歴史。'}]},
-  {id:'v3-mean-esquerda', vol:'v3', kind:'meaning', q:'esquerda', a:['左'], speak:'esquerda',
-    explain:'方向語。<b>esq</b> の綴りに注意。', examples:[{pt:'Gira para a esquerda.', ja:'左に回って。'}]},
-  {id:'v3-mean-cinquenta', vol:'v3', kind:'meaning', q:'cinquenta', a:['50','５０','五十'], speak:'cinquenta',
-    explain:'数詞。<b>qu</b> は「ク/キ」ではなく「クェ」。', examples:[{pt:'Cinquenta abdominais!', ja:'腹筋50回！'}]},
-  {id:'v3-mean-feliz', vol:'v3', kind:'meaning', q:'feliz', a:['幸せな','嬉しい'], speak:'feliz',
-    explain:'形容詞。', examples:[{pt:'Fico feliz com seu jogo!', ja:'君のジョーゴが見れて嬉しい！'}]},
-  {id:'v3-mean-meu', vol:'v3', kind:'meaning', q:'meu', a:['私の','ぼくの','おれの'], speak:'meu',
-    explain:'所有形容詞。性数一致に注意（meu/minha/meus/minhas）。', examples:[{pt:'Esse é meu berimbau.', ja:'これは私のビリンバウ。'}]},
-
-  {id:'v3-spell-furacao', vol:'v3', kind:'spelling', q:'竜巻', a:['furacao','furacão'], speak:'furacão',
-    explain:'<b>furacão</b> はアクセントと鼻母音に注意。<b>fracão</b> と書かないように（意味が変わる）。',
-    examples:[{pt:'O furacão é forte.', ja:'その竜巻は強い。'}]},
-  {id:'v3-spell-azul', vol:'v3', kind:'spelling', q:'青', a:['azul'], speak:'azul',
-    explain:'色名。複数は <i>azuis</i>。', examples:[{pt:'A corda é azul.', ja:'帯は青です。'}]},
-  {id:'v3-spell-atabaque', vol:'v3', kind:'spelling', q:'アタバキ（楽器）', a:['atabaque'], speak:'atabaque',
-    explain:'カポエイラの太鼓。', examples:[{pt:'Toque o atabaque.', ja:'アタバキを叩いて。'}]},
-  {id:'v3-spell-baqueta', vol:'v3', kind:'spelling', q:'バケータ（スティック）', a:['baqueta'], speak:'baqueta',
-    explain:'バケータ＝スティック。', examples:[{pt:'Pegue a baqueta do berimbau.', ja:'ビリンバウのバケータを取って。'}]},
-  {id:'v3-spell-casa', vol:'v3', kind:'spelling', q:'家', a:['casa'], speak:'casa',
-    explain:'基本語彙。', examples:[{pt:'Volto para casa depois do treino.', ja:'稽古の後、家に帰る。'}]},
-  {id:'v3-spell-deus', vol:'v3', kind:'spelling', q:'神', a:['deus','Deus'], speak:'Deus',
-    explain:'文脈により大文字で <b>Deus</b>。', examples:[{pt:'Deus abençoe a roda.', ja:'神がホーダを祝福しますように。'}]},
-];
-
-// ===== Quiz engine =====
-let STATE = {
-  mode: 'practice',
-  volume: 'mix',
-  qs: [],
-  i: 0,
-  score: 0,
-  review: [],
-};
-
-const $ = (sel) => document.querySelector(sel);
-const $$ = (sel) => document.querySelectorAll(sel);
-
-function pick(list, n) {
-  const arr = [...list];
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr.slice(0, n);
-}
-
-function buildSet(volume, count) {
-  const pool = DATA.filter(d => volume === 'mix' ? true : d.vol === volume);
-  // balance kinds roughly
-  const byKind = {
-    reading: pool.filter(d=>d.kind==='reading'),
-    meaning: pool.filter(d=>d.kind==='meaning'),
-    spelling: pool.filter(d=>d.kind==='spelling'),
-  };
-  const each = Math.max(1, Math.floor(count/3));
-  let out = [];
-  out = out.concat(pick(byKind.reading, each), pick(byKind.meaning, each), pick(byKind.spelling, each));
-  if (out.length < count) {
-    const rest = pool.filter(d=>!out.includes(d));
-    out = out.concat(pick(rest, count - out.length));
-  }
-  // shuffle final
-  return pick(out, out.length);
-}
-
-function startQuiz() {
-  STATE.mode = $('#sel-mode').value;
-  STATE.volume = $('#sel-volume').value;
-  const n = Math.min(Math.max(parseInt($('#num-qs').value||'15',10), 5), 60);
-  STATE.qs = buildSet(STATE.volume, n);
-  STATE.i = 0; STATE.score = 0; STATE.review = [];
-  $('#quiz').style.display = '';
-  $('#result').style.display = 'none';
-  renderQ();
-}
-
-function renderQ() {
-  const q = STATE.qs[STATE.i];
-  if (!q) return endQuiz();
-  $('#pill-vol').textContent = q.vol.toUpperCase();
-  $('#pill-kind').textContent = q.kind === 'reading' ? '読み（発音）' : q.kind === 'meaning' ? '意味（日本語）' : 'スペル（ポルトガル語）';
-  $('#pill-no').textContent = `${STATE.i+1} / ${STATE.qs.length}`;
-
-  const promptText = q.kind === 'reading' ? 'このポルトガル語の<b>読み（カタカナ）</b>は？' :
-                     q.kind === 'meaning' ? 'このポルトガル語の<b>意味（日本語）</b>は？' :
-                     '日本語を<b>ポルトガル語で</b>書いてください。';
-  $('#prompt').innerHTML = promptText;
-  $('#qword').textContent = q.q;
-  $('#qsub').textContent = q.kind === 'spelling' ? 'アクセント無しでも採点OK（例：furacao）' : '';
-  $('#answer').value = '';
-  $('#judge').textContent = '';
-  $('#explain').classList.remove('show');
-  $('#explain-text').innerHTML = q.explain || '';
-  $('#examples').innerHTML = (q.examples || []).map(ex => `<li><span class="kbd">${ex.pt}</span> — ${ex.ja}</li>`).join('');
-  $('#btn-next').disabled = true;
-  updateBar();
-}
-
-function updateBar() {
-  const pct = (STATE.i / STATE.qs.length) * 100;
-  $('#bar').style.width = `${pct}%`;
-}
-
-function checkAnswer(userAnswer) {
-  const q = STATE.qs[STATE.i];
-  const raw = (userAnswer || $('#answer').value || '').trim();
-  if (!raw) return;
-
-  // type constraints
-  if (q.kind === 'reading' && $('#chk-reading-katakana').checked) {
-    if (!isKatakana(raw)) {
-      $('#judge').innerHTML = `<span class="hint">カタカナで入力してください（例：ミーニャ）。</span>`;
-      return;
+    // --- Utility Functions ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
     }
-  }
 
-  // Normalize & compare
-  const ans = normalize(raw);
-
-  let ok = false;
-  for (const a of q.a) {
-    // allow katakana variants as is; for PT strings, normalize accents
-    const target = q.kind === 'reading' ? a.trim() : normalize(a);
-    if ((q.kind === 'reading' ? ans === normalize(a) : ans === target) ||
-        // partial matches for meaning (Japanese): accept contains (e.g., "元気です" vs "元気")
-        (q.kind === 'meaning' && normalize(a).length >= 2 && ans.includes(normalize(a))) ) {
-      ok = true; break;
+    function normalizeString(str) {
+        if (!str) return '';
+        return str.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     }
-  }
 
-  const correctShow = Array.from(new Set(q.a)).join(' / ');
-  if (ok) {
-    if (STATE.mode === 'practice') STATE.score++;
-    $('#judge').innerHTML = `<span class="ok">✔ 正解！</span> 答え：<span class="kbd">${correctShow}</span>`;
-    $('#explain').classList.add('show');
-    // auto speak example after correct
-    if ($('#chk-audio-auto').checked && q.examples && q.examples[0]) {
-      speak(q.examples[0].pt);
+    function speak(text, event) {
+        if(event) event.stopPropagation();
+        if (synth.speaking) {
+            synth.cancel();
+        }
+        if (text !== '') {
+            const utterThis = new SpeechSynthesisUtterance(text);
+            utterThis.onerror = function (e) {
+                console.error('SpeechSynthesisUtterance.onerror', e);
+                showMessageBox('音声の再生に失敗しました。ブラウザが対応していないか、音声がロードされていません。');
+            }
+            const ptBrVoice = voices.find(voice => voice.lang === 'pt-BR');
+            utterThis.voice = ptBrVoice ? ptBrVoice : voices.find(voice => voice.lang.startsWith('pt'));
+            utterThis.lang = 'pt-BR';
+            utterThis.pitch = 1;
+            utterThis.rate = 0.9;
+            synth.speak(utterThis);
+        }
     }
-  } else {
-    $('#judge').innerHTML = `<span class="ng">✘ 不正解</span> 正解：<span class="kbd">${correctShow}</span>`;
-    $('#explain').classList.add('show');
-  }
+    
+    function showMessageBox(text) {
+        messageText.textContent = text;
+        messageBox.classList.remove('hidden');
+    }
 
-  // record review
-  STATE.review.push({
-    id: q.id, vol:q.vol, kind:q.kind, q:q.q, your: raw, correct: correctShow, ok
-  });
+    // --- Tab Switching ---
+    function switchTab(tabName) {
+        currentTab = tabName;
+        for (const key in tabButtons) {
+            tabButtons[key].classList.toggle('active', key === tabName);
+            tabContents[key].classList.toggle('active', key === tabName);
+        }
+    }
 
-  $('#btn-next').disabled = false;
-}
+    // --- Quiz Logic ---
+    function startQuiz() {
+        const selectedSet = quizSetSelect.value;
+        const selectedType = quizTypeSelect.value;
+        let questions = (selectedSet === 'mix')
+            ? [...quizData.vol1, ...quizData.vol2, ...quizData.vol3]
+            : [...quizData[selectedSet]];
+        
+        if (selectedType === 'fill-in-blank') {
+            questions = questions.filter(q => q.fillInBlank && q.fillInBlank.question && q.fillInBlank.answer);
+            if (questions.length === 0) {
+                showMessageBox('このセットには穴埋め問題がありません。');
+                return;
+            }
+        }
 
-function nextQ() {
-  STATE.i++;
-  if (STATE.i >= STATE.qs.length) return endQuiz();
-  renderQ();
-}
+        quizState = {
+            questions: shuffleArray(questions),
+            currentIndex: 0,
+            score: 0,
+            mistakes: [],
+            currentQuestion: null,
+            type: selectedType,
+        };
 
-function endQuiz() {
-  // finalize score for exam mode
-  if (STATE.mode === 'exam') {
-    STATE.score = STATE.review.filter(r=>r.ok).length;
-  }
-  $('#quiz').style.display = 'none';
-  $('#result').style.display = '';
-  $('#score').textContent = `正解数：${STATE.score} / ${STATE.qs.length}（正答率 ${(STATE.score/STATE.qs.length*100).toFixed(0)}%）`;
-  const rows = STATE.review.map(r=>`
-    <tr class="${r.ok? '': 'miss'}">
-      <td>${r.vol.toUpperCase()}</td>
-      <td>${r.kind==='reading'?'読み':r.kind==='meaning'?'意味':'スペル'}</td>
-      <td>${r.q}</td>
-      <td><span class="kbd">${r.correct}</span></td>
-      <td>${r.your? `<span class="kbd">${r.your}</span>` : '<span class="muted">（未回答）</span>'}</td>
-      <td>${r.ok? '✔' : '✘'}</td>
-    </tr>`).join('');
-  $('#review').innerHTML = `<div style="overflow:auto; max-height: 420px"><table>
-    <thead><tr><th>Vol</th><th>種別</th><th>設問</th><th>正解</th><th>あなたの回答</th><th>判定</th></tr></thead>
-    <tbody>${rows}</tbody></table></div>`;
-}
+        quizSetup.classList.add('hidden');
+        quizResults.classList.add('hidden');
+        quizMain.classList.remove('hidden');
+        displayQuestion();
+    }
 
-// ===== Wiring =====
-$('#btn-start').addEventListener('click', startQuiz);
-$('#btn-check').addEventListener('click', ()=>checkAnswer());
-$('#btn-next').addEventListener('click', nextQ);
-$('#btn-skip').addEventListener('click', ()=>{ STATE.review.push({id:STATE.qs[STATE.i].id, vol:STATE.qs[STATE.i].vol, kind:STATE.qs[STATE.i].kind, q:STATE.qs[STATE.i].q, your:'', correct: Array.from(new Set(STATE.qs[STATE.i].a)).join(' / '), ok:false}); nextQ(); });
-$('#btn-show').addEventListener('click', ()=> $('#explain').classList.toggle('show'));
-$('#btn-home').addEventListener('click', ()=>{ $('#result').style.display='none'; });
-$('#btn-retry').addEventListener('click', startQuiz);
-$('#btn-speak').addEventListener('click', ()=>{
-  const q = STATE.qs[STATE.i];
-  if (q && q.speak) speak(q.speak);
-});
+    function displayQuestion() {
+        if (quizState.currentIndex >= quizState.questions.length) {
+            showResults();
+            return;
+        }
 
-// submit with Enter
-$('#answer').addEventListener('keydown', (e)=>{
-  if (e.key === 'Enter') {
-    e.preventDefault();
-    if ($('#btn-next').disabled) checkAnswer(); else nextQ();
-  }
-});
+        quizState.currentQuestion = quizState.questions[quizState.currentIndex];
+        const q = quizState.currentQuestion;
 
-// voice list loading (Chrome loads async)
-if (window.speechSynthesis) {
-  speechSynthesis.onvoiceschanged = () => {};
-}
-</script>
+        quizProgress.textContent = `問題 ${quizState.currentIndex + 1} / ${quizState.questions.length}`;
+        answerInput.value = '';
+        answerInput.disabled = false;
+        submitAnswerBtn.disabled = false;
+        feedbackArea.classList.add('hidden');
+        
+        speakQuestionMainBtn.classList.add('hidden');
+        fillInBlankHint.textContent = '';
+
+        switch (quizState.type) {
+            case 'meaning':
+                questionLabel.textContent = 'この単語の意味は？';
+                questionText.textContent = q.portuguese;
+                speakQuestionMainBtn.classList.remove('hidden');
+                speak(q.portuguese);
+                break;
+            case 'spelling':
+                questionLabel.textContent = 'この意味の単語をポルトガル語で書くと？';
+                questionText.textContent = q.japanese.split('（')[0];
+                break;
+            case 'fill-in-blank':
+                questionLabel.textContent = '___ に入る文字は？';
+                questionText.textContent = q.fillInBlank.question;
+                fillInBlankHint.textContent = `意味: ${q.japanese.split('（')[0]}`;
+                break;
+        }
+        
+        answerInput.focus();
+    }
+
+    function checkAnswer() {
+        const userAnswer = answerInput.value.trim();
+        if (userAnswer === '') return;
+
+        const q = quizState.currentQuestion;
+        let isCorrect = false;
+        let correctAnswer = '';
+
+        switch (quizState.type) {
+            case 'meaning':
+                correctAnswer = q.japanese.split('（')[0].trim();
+                const possibleAnswers = q.japanese.split(/、|,|\//).map(s => s.split('（')[0].trim());
+                isCorrect = possibleAnswers.some(ans => userAnswer.toLowerCase() === ans.toLowerCase());
+                break;
+            case 'spelling':
+                correctAnswer = q.portuguese;
+                isCorrect = normalizeString(userAnswer) === normalizeString(correctAnswer);
+                break;
+            case 'fill-in-blank':
+                correctAnswer = q.fillInBlank.answer;
+                isCorrect = normalizeString(userAnswer) === normalizeString(correctAnswer);
+                break;
+        }
+
+        answerInput.disabled = true;
+        submitAnswerBtn.disabled = true;
+        feedbackArea.classList.remove('hidden');
+        nextQuestionBtn.focus();
+
+        if (isCorrect) {
+            feedbackText.textContent = '正解！ (Correcto!)';
+            feedbackText.className = 'text-2xl font-bold text-green-500';
+            quizState.score++;
+        } else {
+            feedbackText.textContent = '不正解 (Errado)';
+            feedbackText.className = 'text-2xl font-bold text-red-500';
+            quizState.mistakes.push(q);
+        }
+
+        const finalAnswer = quizState.type === 'fill-in-blank' ? q.portuguese : correctAnswer;
+        correctAnswerText.textContent = `正解: ${finalAnswer}`;
+        explanationText.textContent = q.explanation;
+        exampleSentenceText.textContent = `例文: ${q.exampleSentence}`;
+    }
+
+    function showResults() {
+        quizMain.classList.add('hidden');
+        quizResults.classList.remove('hidden');
+        const percentage = Math.round((quizState.score / quizState.questions.length) * 100);
+        scoreText.textContent = `${percentage}% (${quizState.score} / ${quizState.questions.length} 正解)`;
+        mistakesList.innerHTML = '<h3 class="font-bold text-xl mb-4">間違えた問題</h3>';
+        if (quizState.mistakes.length === 0) {
+            mistakesList.innerHTML += '<p>全問正解です！Parabéns!</p>';
+        } else {
+            const list = document.createElement('ul');
+            list.className = 'space-y-4';
+            quizState.mistakes.forEach(q => {
+                const li = document.createElement('li');
+                li.className = 'p-3 bg-red-50 rounded-md';
+                li.innerHTML = `<p class="font-semibold">${q.portuguese}</p><p class="text-gray-700">${q.japanese}</p>`;
+                list.appendChild(li);
+            });
+            mistakesList.appendChild(list);
+        }
+    }
+
+    function quitQuiz() {
+        quizMain.classList.add('hidden');
+        quizResults.classList.add('hidden');
+        quizSetup.classList.remove('hidden');
+    }
+
+    // --- Conversation Logic ---
+    function populateConversationCategories() {
+        conversationData.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.category;
+            option.textContent = cat.category;
+            conversationCategorySelect.appendChild(option);
+        });
+    }
+
+    function loadConversationCategory(categoryName) {
+        const category = conversationData.find(c => c.category === categoryName);
+        if (!category) return;
+
+        conversationDisplay.innerHTML = '';
+        category.items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'p-4 border rounded-lg bg-white shadow-sm conversation-card';
+            
+            const fillInBlankHTML = item.fillInBlank ? `
+                <div class="mt-4 pt-4 border-t conv-fill-in-blank" data-full-sentence="${item.portuguese}">
+                    <p class="text-sm font-semibold mb-2">穴埋め練習:</p>
+                    <div class="flex items-center text-lg">
+                        ${item.fillInBlank.sentence.replace('___', `<input type="text" class="fill-in-blank-input" data-answer="${item.fillInBlank.answer}">`)}
+                    </div>
+                </div>
+            ` : '';
+
+            const speaker1Text = item.example.speaker1.split(/:(.*)/s)[1].trim();
+            const speaker2Text = item.example.speaker2.split(/:(.*)/s)[1].trim();
+
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="font-bold text-lg text-blue-700 conv-pt" data-lang="pt">${item.portuguese}</p>
+                        <p class="text-gray-600 conv-jp" data-lang="jp">${item.japanese}</p>
+                        <p class="text-xs text-gray-400 mt-1 conv-details">${item.context}</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="speak-phrase-btn text-gray-500 hover:text-blue-500" title="再生" data-speak="${item.portuguese}">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-3 p-3 bg-gray-50 rounded-md text-sm conv-details">
+                    <div class="flex items-center justify-between">
+                        <p><strong>Mestre:</strong> ${speaker1Text}</p>
+                        <i class="fas fa-volume-up speak-btn speak-example-line-btn" data-speak="${speaker1Text}"></i>
+                    </div>
+                    <div class="flex items-center justify-between mt-1">
+                        <p><strong>Aluno:</strong> ${speaker2Text}</p>
+                        <i class="fas fa-volume-up speak-btn speak-example-line-btn" data-speak="${speaker2Text}"></i>
+                    </div>
+                </div>
+                ${fillInBlankHTML}
+            `;
+            conversationDisplay.appendChild(card);
+        });
+        applyConversationView();
+    }
+    
+    function cycleConversationView() {
+        if (conversationViewMode === 'portuguese') {
+            conversationViewMode = 'japanese';
+        } else if (conversationViewMode === 'japanese') {
+            conversationViewMode = 'full';
+        } else {
+            conversationViewMode = 'portuguese';
+        }
+        applyConversationView();
+    }
+
+    function applyConversationView() {
+        const allCards = document.querySelectorAll('.conversation-card');
+        
+        allCards.forEach(card => {
+            const pt = card.querySelector('.conv-pt');
+            const jp = card.querySelector('.conv-jp');
+            const details = card.querySelectorAll('.conv-details');
+            const fillInBlank = card.querySelector('.conv-fill-in-blank');
+
+            // Reset visibility
+            pt.classList.remove('hidden');
+            jp.classList.remove('hidden');
+            details.forEach(d => d.classList.remove('hidden'));
+            if (fillInBlank) fillInBlank.classList.remove('hidden');
+
+            if (conversationViewMode === 'portuguese') {
+                jp.classList.add('hidden');
+                details.forEach(d => d.classList.add('hidden'));
+                if (fillInBlank) fillInBlank.classList.add('hidden');
+            } else if (conversationViewMode === 'japanese') {
+                pt.classList.add('hidden');
+                details.forEach(d => d.classList.add('hidden'));
+            } else { // 'full'
+                if (fillInBlank) fillInBlank.classList.add('hidden');
+            }
+        });
+
+        // Update button text/icon
+        if (conversationViewMode === 'portuguese') {
+            cycleViewBtn.innerHTML = `<i class="fas fa-language mr-2"></i>日本語訳で練習`;
+        } else if (conversationViewMode === 'japanese') {
+            cycleViewBtn.innerHTML = `<i class="fas fa-eye mr-2"></i>詳細を表示`;
+        } else { // 'full'
+            cycleViewBtn.innerHTML = `<i class="fas fa-eye-slash mr-2"></i>シンプル表示`;
+        }
+    }
+    
+    // --- Event Listeners ---
+    window.addEventListener('DOMContentLoaded', () => {
+        switchTab('quiz');
+
+        function populateVoiceList() {
+            voices = synth.getVoices();
+        }
+        populateVoiceList();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = populateVoiceList;
+        }
+
+        // Quiz events
+        startQuizBtn.addEventListener('click', startQuiz);
+        quitQuizBtn.addEventListener('click', quitQuiz);
+        submitAnswerBtn.addEventListener('click', checkAnswer);
+        answerInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') checkAnswer(); });
+        nextQuestionBtn.addEventListener('click', () => {
+            quizState.currentIndex++;
+            displayQuestion();
+        });
+        restartQuizBtn.addEventListener('click', startQuiz);
+        speakQuestionMainBtn.addEventListener('click', (e) => speak(quizState.currentQuestion.portuguese, e));
+        speakExampleBtn.addEventListener('click', (e) => speak(quizState.currentQuestion.exampleSentence, e));
+        
+        // Conversation events
+        populateConversationCategories();
+        loadConversationCategory(conversationCategorySelect.value);
+        conversationCategorySelect.addEventListener('change', (e) => loadConversationCategory(e.target.value));
+        cycleViewBtn.addEventListener('click', cycleConversationView);
+
+        conversationDisplay.addEventListener('click', (e) => {
+            const speakBtn = e.target.closest('.speak-phrase-btn, .speak-example-line-btn');
+            if (speakBtn) {
+                speak(speakBtn.dataset.speak, e);
+            }
+        });
+        
+        conversationDisplay.addEventListener('input', (e) => {
+            const inputEl = e.target;
+            if (inputEl.matches('.fill-in-blank-input')) {
+                const userAnswer = inputEl.value.trim();
+                const correctAnswer = inputEl.dataset.answer;
+                if (normalizeString(userAnswer) === normalizeString(correctAnswer)) {
+                    inputEl.style.borderColor = '#22c55e';
+                    inputEl.style.color = '#22c55e';
+                    inputEl.disabled = true;
+                    
+                    const container = inputEl.closest('.conv-fill-in-blank');
+                    if (container && container.dataset.fullSentence) {
+                        speak(container.dataset.fullSentence);
+                    }
+                } else {
+                    inputEl.style.borderColor = '#ef4444';
+                }
+            }
+        });
+        
+        messageOkBtn.addEventListener('click', () => messageBox.classList.add('hidden'));
+    });
+    </script>
 </body>
 </html>
