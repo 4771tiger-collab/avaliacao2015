@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Capoeira Português Trainer</title>
+  <style>
+  :root {
+    --bg: #f0f6ff;      /* light blue */
+    --card: #ffffff;     /* white */
+    --muted: #475569;    /* slate-600 */
+    --text: #0f172a;     /* slate-900 */
+    --accent: #2563eb;   /* blue-600 */
+    --accent-2: #0ea5e9; /* sky-500 */
+    --danger: #ef4444;   /* red-500 */
+    --warning: #f59e0b;  /* amber-500 */
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans JP, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    background: linear-gradient(180deg, #f8fbff 0%, #f0f6ff 60%, #ffffff 100%);
+    color: var(--text);
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+  header {
+    padding: 20px 16px; border-bottom: 1px solid #e5e7eb; backdrop-filter: blur(6px);
+    position: sticky; top: 0; z-index: 10; background: rgba(255,255,255,.75);
+  }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: .3px; }
+  .sub { color: var(--muted); font-size: 14px; }
+
+  .controls, .card, .result-card {
+    background:
+      radial-gradient(900px 400px at 10% -10%, rgba(59,130,246,.08), transparent 60%),
+      radial-gradient(700px 300px at 110% 10%, rgba(14,165,233,.08), transparent 50%),
+      var(--card);
+    border: 1px solid #e5e7eb; border-radius: 16px; padding: 16px;
+    box-shadow: 0 8px 24px rgba(15,23,42,.08);
+  }
+  .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; align-items: end; }
+  .controls label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .controls select, .controls input[type="number"], .controls button {
+    width: 100%; padding: 10px 12px; background: #ffffff; color: var(--text);
+    border: 1px solid #cbd5e1; border-radius: 10px; outline: none;
+  }
+  .controls button {
+    background: linear-gradient(180deg, #60a5fa, #2563eb);
+    border: none; font-weight: 700; letter-spacing: .3px; cursor: pointer; transition: transform .06s ease; color: #ffffff;
+  }
+  .controls button:active { transform: translateY(1px); }
+
+  .flex-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .pill {
+    font-size: 12px; padding: 6px 10px; border-radius: 999px;
+    border: 1px solid #cfe0f8; background:#eff6ff; color: #1e3a8a;
+  }
+
+  .card { margin-top: 16px; }
+  .prompt { font-size: 14px; color: var(--muted); margin-bottom: 6px; display:flex; align-items:center; gap:8px; }
+  .q-word { font-size: 32px; font-weight: 800; letter-spacing: .4px; margin: 8px 0 2px; }
+  .q-sub { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+
+  .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: stretch; }
+  input[type="text"] {
+    width: 100%; padding: 14px 14px; font-size: 18px; border-radius: 12px;
+    border: 1px solid #cbd5e1; color: var(--text); background: #ffffff; outline: none;
+  }
+
+  .btn { padding: 12px 14px; border-radius: 12px; border: 1px solid #cbd5e1; background: #ffffff; color: var(--text); font-weight: 700; cursor: pointer; }
+  .btn.primary { background: linear-gradient(180deg, #60a5fa, #2563eb); border:none; color: #ffffff; }
+  .btn.ghost { background: transparent; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+
+  .explain { margin-top: 14px; display: none; }
+  .explain.show { display: block; }
+  .explain h3 { margin: 0 0 8px; font-size: 15px; color: #1d4ed8; }
+  .explain p, .explain li { color: #1f2937; line-height: 1.6; }
+
+  .judge { margin-top: 8px; font-weight: 800; }
+  .ok { color: var(--accent); }
+  .ng { color: var(--danger); }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; }
+
+  .progress { height: 10px; background: #ffffff; border:1px solid #e5e7eb; border-radius: 999px; overflow:hidden; margin-top: 12px; }
+  .progress > div { height: 100%; background: linear-gradient(90deg, #2563eb, #0ea5e9); width: 0%; }
+
+  .result-card { margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { border-bottom: 1px dashed #e5e7eb; padding: 8px 6px; text-align: left; }
+  tr.miss td { background: rgba(239, 68, 68, .06); }
+
+  footer { padding: 18px; text-align: center; color: var(--muted); font-size: 12px; border-top:1px solid #e5e7eb; background:#ffffff80; }
+  a { color: #2563eb; }
+  .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; font-size: 12px; padding: 2px 6px; border:1px solid #cbd5e1; border-radius:6px; }
+  .hint { color: #1e40af; }
+</style>
+
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Capoeira Português Trainer</h1>
+      <div class="sub">カポエイラで使うポルトガル語を、クイズ形式＋音声で学習できます。テスト／練習モード、解説・例文つき。</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="controls">
+      <div>
+        <label>出題セット</label>
+        <select id="sel-volume">
+          <option value="v1">Vol.1</option>
+          <option value="v2">Vol.2</option>
+          <option value="v3">Vol.3</option>
+          <option value="mix" selected>ミックス（全部）</option>
+        </select>
+      </div>
+      <div>
+        <label>モード</label>
+        <select id="sel-mode">
+          <option value="practice" selected>練習（即時フィードバック）</option>
+          <option value="exam">テスト（最後に採点）</option>
+        </select>
+      </div>
+      <div>
+        <label>問題数</label>
+        <input id="num-qs" type="number" min="5" max="60" step="1" value="15" />
+      </div>
+      <div>
+        <label>&nbsp;</label>
+        <button id="btn-start">▶ 学習開始</button>
+      </div>
+      <div class="grid-2" style="grid-column: 1 / -1;">
+        <label><input type="checkbox" id="chk-reading-katakana" checked /> 読み問題はカタカナ入力を要求</label>
+        <label><input type="checkbox" id="chk-audio-auto" /> 正解後に例文を自動で読み上げ</label>
+      </div>
+    </section>
+
+    <section id="quiz" class="card" style="display:none">
+      <div class="flex-row">
+        <span class="pill" id="pill-vol"></span>
+        <span class="pill" id="pill-kind"></span>
+        <span class="pill" id="pill-no"></span>
+      </div>
+      <div class="prompt" id="prompt"></div>
+      <div class="q-word" id="qword"></div>
+      <div class="q-sub" id="qsub"></div>
+
+      <div class="row">
+        <input type="text" id="answer" placeholder="ここに解答を入力" autocomplete="off" />
+        <button id="btn-speak" class="btn" title="音声（pt-BR）">🔊 発音</button>
+      </div>
+
+      <div class="actions">
+        <button id="btn-check" class="btn primary">解答する</button>
+        <button id="btn-skip" class="btn">スキップ</button>
+        <button id="btn-show" class="btn ghost">解説を表示</button>
+        <button id="btn-next" class="btn" disabled>次へ</button>
+      </div>
+
+      <div id="judge" class="judge"></div>
+
+      <div id="explain" class="explain">
+        <h3>解説 / Dica</h3>
+        <div id="explain-text"></div>
+        <h3 style="margin-top:12px">会話例 / Exemplo</h3>
+        <ul class="ex-list" id="examples"></ul>
+      </div>
+
+      <div class="progress"><div id="bar"></div></div>
+    </section>
+
+    <section id="result" class="result-card" style="display:none">
+      <h2>結果</h2>
+      <p id="score"></p>
+      <div id="review"></div>
+      <div class="actions">
+        <button class="btn" id="btn-retry">同じ設定でもう一度</button>
+        <button class="btn" id="btn-home">設定に戻る</button>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px">
+      <details>
+        <summary><strong>使い方 & 仕様</strong></summary>
+        <ul>
+          <li>Vol.1〜3はアップロード頂いたアヴァリアソン（評価テスト）を元に作成。読み・意味・スペルの3形式を出題します。</li>
+          <li>入力は全角・半角・大文字小文字・アクセントを無視して採点（例：<span class="kbd">furacão</span> ⇒ <span class="kbd">FURACAO</span>もOK）。</li>
+          <li>音声はブラウザの <code>SpeechSynthesis</code> を使用（ポルトガル語(ブラジル)の音声がある場合に再生）。</li>
+          <li>練習モードでは即時採点＋解説を表示。テストモードでは最後に一覧レビューが表示されます。</li>
+        </ul>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    Made for Capoeira study • Web Speech API を使用（音声の有無は端末依存） • © você
+  </footer>
+
+<script>
+// ===== Utility: normalize strings (ignore case/accents) =====
+const normalize = (s) => s
+  .toString()
+  .trim()
+  .normalize('NFD')
+  .replace(/[\u0300-\u036f]/g, '') // strip accents
+  .replace(/\s+/g, ' ')
+  .toLowerCase();
+
+const isKatakana = (s) => /[\u30A0-\u30FF]/.test(s);
+
+// SpeechSynthesis helpers
+function speak(text, lang='pt-BR') {
+  const u = new SpeechSynthesisUtterance(text);
+  const voice = speechSynthesis.getVoices().find(v => v.lang.toLowerCase().startsWith(lang.toLowerCase()));
+  if (voice) u.voice = voice; else u.lang = lang; 
+  u.rate = 0.95; u.pitch = 1.0; u.volume = 1.0;
+  speechSynthesis.cancel();
+  speechSynthesis.speak(u);
+}
+
+// ===== Dataset (from the provided tests; added examples & explanations) =====
+// key fields: id, vol, kind ('reading'|'meaning'|'spelling'), q, a (array of accepted answers),
+// speak: text to pronouce, explain: html, examples: [{pt, ja}]
+
+const DATA = [
+  // ------------ Vol.1 --------------
+  {id:'v1-read-carrinho', vol:'v1', kind:'reading', q:'carrinho', a:['カヒーニョ','カヒーニョー'], speak:'carrinho',
+    explain:'語頭の <b>r</b> と語中の <b>rr</b> は「ハ行」に近い音。<b>nh</b> は「ニャ」。',
+    examples:[{pt:'Leve o carrinho devagar.', ja:'台車をゆっくり押して。'}]},
+  {id:'v1-read-bolsa', vol:'v1', kind:'reading', q:'bolsa', a:['ボウサ','ボウザ','ボルサ'], speak:'bolsa',
+    explain:'語中や語末の <b>l</b> は「ウ」に近い。地域や話者で<b>ボルサ</b>と聞こえる場合も。',
+    examples:[{pt:'Guarde a bolsa no vestiário.', ja:'かばんは更衣室にしまって。'}]},
+  {id:'v1-read-real', vol:'v1', kind:'reading', q:'real', a:['ヘアウ','ヘアウー'], speak:'real',
+    explain:'通貨名。語頭の <b>r</b> は「ハ」音、語末の <b>l</b> は「ウ」。',
+    examples:[{pt:'A mensalidade é vinte reais.', ja:'月謝は20ヘアウです。'}]},
+  {id:'v1-read-quinze', vol:'v1', kind:'reading', q:'quinze', a:['キンズィ','キンジ'], speak:'quinze',
+    explain:'<b>qu</b> は「キ」/「クィ」。この語は「キンジ」に近い音（地域差あり）。',
+    examples:[{pt:'Começamos às quinze horas.', ja:'15時に始めます。'}]},
+
+  {id:'v1-mean-ritmo', vol:'v1', kind:'meaning', q:'ritmo', a:['リズム','拍子'], speak:'ritmo',
+    explain:'練習中にもよく出る語。<b>ritmo</b> はジンガや歌の「ノリ」を指すことも。',
+    examples:[{pt:'Sinta o ritmo do berimbau.', ja:'ビリンバウのリズムを感じて。'}]},
+  {id:'v1-mean-respeito', vol:'v1', kind:'meaning', q:'respeito', a:['敬意','尊重'], speak:'respeito',
+    explain:'先生や仲間、ホーダへの<b>敬意</b>。挨拶やマナー全般にも使う言葉。',
+    examples:[{pt:'Mostre respeito ao parceiro.', ja:'相手に敬意を示そう。'}]},
+  {id:'v1-mean-regional', vol:'v1', kind:'meaning', q:'regional', a:['地域の','レジオナウ','ヘジオナウ'], speak:'regional',
+    explain:'一般語としては「地域の」。文脈によっては「カポエイラ・ヘジオナウ（Regional）」流派も。',
+    examples:[{pt:'Treino regional hoje à noite.', ja:'今夜はヘジオナウの練習。'}]},
+  {id:'v1-mean-maisumavez', vol:'v1', kind:'meaning', q:'mais uma vez', a:['もう一回','もう一度'], speak:'mais uma vez',
+    explain:'練習でよく聞く指示。「<span class="hint">もう一回！</span>」',
+    examples:[{pt:'Faz a sequência mais uma vez!', ja:'もう一回そのシークエンスやって！'}]},
+  {id:'v1-mean-devagar', vol:'v1', kind:'meaning', q:'devagar', a:['ゆっくり','ゆっくりと'], speak:'devagar',
+    explain:'スピード調整の基本語。',
+    examples:[{pt:'Vamos devagar primeiro.', ja:'まずはゆっくり行こう。'}]},
+  {id:'v1-mean-tudobem', vol:'v1', kind:'meaning', q:'tudo bem', a:['元気です','大丈夫です','調子いいよ'], speak:'tudo bem',
+    explain:'挨拶の定番。「Tudo bem? — Tudo.」',
+    examples:[{pt:'Oi! Tudo bem?', ja:'やあ！元気？'}]},
+  {id:'v1-mean-parabens', vol:'v1', kind:'meaning', q:'parabéns', a:['おめでとう','おめでとうございます'], speak:'parabéns',
+    explain:'帯の昇格や勝利を祝う言葉。',
+    examples:[{pt:'Parabéns pela graduação!', ja:'昇級おめでとう！'}]},
+  {id:'v1-mean-vinte', vol:'v1', kind:'meaning', q:'vinte', a:['20','２０','二十'], speak:'vinte',
+    explain:'数詞の練習にも。',
+    examples:[{pt:'Vinte minutos de alongamento.', ja:'ストレッチ20分。'}]},
+
+  {id:'v1-spell-right', vol:'v1', kind:'spelling', q:'右', a:['direita'], speak:'direita',
+    explain:'左右はカポエイラで頻出。', examples:[{pt:'Ginga para a direita.', ja:'右にジンガして。'}]},
+  {id:'v1-spell-left', vol:'v1', kind:'spelling', q:'左', a:['esquerda'], speak:'esquerda',
+    explain:'<b>esq</b> のつづりに注意。', examples:[{pt:'Esquiva para a esquerda.', ja:'左にエスキーヴァ。'}]},
+  {id:'v1-spell-knife', vol:'v1', kind:'spelling', q:'ナイフ', a:['faca'], speak:'faca',
+    explain:'キメの語彙も少し。', examples:[{pt:'Não traga faca para o treino.', ja:'稽古にナイフは持ってこないでね。'}]},
+  {id:'v1-spell-corrido', vol:'v1', kind:'spelling', q:'コヒード（歌の種類）', a:['corrido'], speak:'corrido',
+    explain:'歌の形式の一つ。<b>Corridos</b> はコール＆レスポンス。', examples:[{pt:'Vamos cantar um corrido!', ja:'コヒードを歌おう！'}]},
+  {id:'v1-spell-quadra', vol:'v1', kind:'spelling', q:'クアドラ（体育館コート）', a:['quadra'], speak:'quadra',
+    explain:'練習場所でよく使う語。', examples:[{pt:'A quadra está livre hoje.', ja:'今日はコート空いてるよ。'}]},
+  {id:'v1-spell-red', vol:'v1', kind:'spelling', q:'赤', a:['vermelho','vermelha'], speak:'vermelho',
+    explain:'形容詞は語尾が性数で変化。', examples:[{pt:'Berimbau vermelho.', ja:'赤いビリンバウ。'}]},
+
+  // ------------ Vol.2 --------------
+  {id:'v2-read-xareu', vol:'v2', kind:'reading', q:'xaréu', a:['シャレウ'], speak:'xaréu',
+    explain:'<b>x</b> は読みが多様。この語では「シャ」。', examples:[{pt:'Xaréu é um peixe.', ja:'シャレウは魚の一種。'}]},
+  {id:'v2-read-chapeu', vol:'v2', kind:'reading', q:'chapéu', a:['シャペウ'], speak:'chapéu',
+    explain:'<b>ch</b> は「シャ」。<b>éu</b> の鼻にかからない二重母音にも注意。', examples:[{pt:'Tire o chapéu na roda.', ja:'ホーダでは帽子を脱ごう。'}]},
+  {id:'v2-read-sequencia', vol:'v2', kind:'reading', q:'sequência', a:['セクェンスィア','セクエンシア'], speak:'sequência',
+    explain:'2009年の正書法以降、<b>qüe</b> の分音記号tremaは廃止。ただし発音習慣は継承される（「セクェ…」）。',
+    examples:[{pt:'Repete a sequência de golpes.', ja:'技の連携（シークエンス）をもう一度。'}]},
+  {id:'v2-read-dende', vol:'v2', kind:'reading', q:'dendê', a:['デンデー'], speak:'dendê',
+    explain:'語末にアクセントがある「デンデー」。バイーア料理に欠かせないパーム油。',
+    examples:[{pt:'Acarajé leva azeite de dendê.', ja:'アカラジェにはデンデ油を使う。'}]},
+
+  {id:'v2-mean-oi', vol:'v2', kind:'meaning', q:'oi', a:['やあ','こんにちは','おーい'], speak:'oi',
+    explain:'カジュアルな挨拶。', examples:[{pt:'Oi, gente!', ja:'やあ、みんな！'}]},
+  {id:'v2-mean-queixo', vol:'v2', kind:'meaning', q:'queixo', a:['あご'], speak:'queixo',
+    explain:'受け身やガードの指示で頻出。', examples:[{pt:'Protege o queixo.', ja:'あごを守って。'}]},
+  {id:'v2-mean-cabeca', vol:'v2', kind:'meaning', q:'cabeça', a:['頭','あたま'], speak:'cabeça',
+    explain:'センサーのように常に相手を「見る」意識。', examples:[{pt:'Mexe a cabeça no esquiva.', ja:'エスキーヴァで頭を動かして。'}]},
+  {id:'v2-mean-cotovelo', vol:'v2', kind:'meaning', q:'cotovelo', a:['ひじ','肘'], speak:'cotovelo',
+    explain:'接近戦での距離感にも。', examples:[{pt:'Não use o cotovelo aqui.', ja:'ここでは肘は使わないよ。'}]},
+  {id:'v2-mean-joelho', vol:'v2', kind:'meaning', q:'joelho', a:['ひざ','膝'], speak:'joelho',
+    explain:'アウーやメイア・ルーアで膝を守る。', examples:[{pt:'Dobre o joelho.', ja:'膝を曲げて。'}]},
+  {id:'v2-mean-quinto', vol:'v2', kind:'meaning', q:'quinto(a)', a:['5番目の','五番目の'], speak:'quinto',
+    explain:'序数詞。性一致に注意（o/a）。', examples:[{pt:'Ele é o quinto da fila.', ja:'彼は列の5番目。'}]},
+  {id:'v2-mean-quelegal', vol:'v2', kind:'meaning', q:'Que legal!', a:['いいね','いいね！','いいじゃん','素敵'], speak:'Que legal!',
+    explain:'称賛のひとこと。', examples:[{pt:'Que jogo bonito! Que legal!', ja:'いいジョーゴだね！いいね！'}]},
+  {id:'v2-mean-tchau', vol:'v2', kind:'meaning', q:'Tchau', a:['バイバイ','じゃあね','さようなら'], speak:'Tchau',
+    explain:'別れの挨拶。', examples:[{pt:'Tchau, até amanhã!', ja:'バイバイ、また明日！'}]},
+
+  {id:'v2-spell-jogo', vol:'v2', kind:'spelling', q:'ジョーゴ（試合／プレイ）', a:['jogo'], speak:'jogo',
+    explain:'カポエイラそのものを「jogo（ジョーゴ）」とも言う。', examples:[{pt:'Vamos fazer um jogo.', ja:'ジョーゴしよう。'}]},
+  {id:'v2-spell-corrido', vol:'v2', kind:'spelling', q:'コヒード（歌の種類）', a:['corrido'], speak:'corrido',
+    explain:'Vol.1と同じ語。反復で定着を。', examples:[{pt:'Canta um corrido clássico.', ja:'定番のコヒードを歌って。'}]},
+  {id:'v2-spell-salvador', vol:'v2', kind:'spelling', q:'サルヴァドール（地名）', a:['salvador','Salvador'], speak:'Salvador',
+    explain:'バイーア州の州都。発音は「サウヴァドール」に近い。', examples:[{pt:'Salvador tem muita capoeira.', ja:'サルヴァドールはカポエイラが盛ん。'}]},
+  {id:'v2-spell-bahia', vol:'v2', kind:'spelling', q:'バイーア（州名）', a:['bahia','Bahia'], speak:'Bahia',
+    explain:'「バヒーア」に近い音。', examples:[{pt:'Moro na Bahia.', ja:'私はバイーアに住んでいます。'}]},
+  {id:'v2-spell-bonfim', vol:'v2', kind:'spelling', q:'ボンフィン教会（略称）', a:['igreja do bonfim','igreja nosso senhor do bonfim','igreja de nosso senhor do bonfim'], speak:'Igreja do Bonfim',
+    explain:'正式は <i>Igreja Nosso Senhor do Bonfim</i>。略称も可。', examples:[{pt:'Vamos à Igreja do Bonfim.', ja:'ボンフィン教会へ行こう。'}]},
+  {id:'v2-spell-peixe', vol:'v2', kind:'spelling', q:'魚', a:['peixe'], speak:'peixe',
+    explain:'<b>ei</b> は「エイ」。<b>x</b> はここでは「シ」。', examples:[{pt:'Esse peixe é xaréu.', ja:'この魚はシャレウだよ。'}]},
+
+  // ------------ Vol.3 --------------
+  {id:'v3-read-saude', vol:'v3', kind:'reading', q:'saúde', a:['サウーヂ','サウージ'], speak:'saúde',
+    explain:'語末の <b>de</b> はブラジルでは「ヂ/ジ」に近い。<b>ú</b> は長め。乾杯の掛け声にも。',
+    examples:[{pt:'Saúde! Axé!', ja:'乾杯！アシェ！'}]},
+  {id:'v3-read-axe', vol:'v3', kind:'reading', q:'axé', a:['アシェ','アシェー'], speak:'axé',
+    explain:'<b>x</b> はここでは「シ」。<b>axé</b> は「良いエネルギー」。ホーダでの雰囲気そのもの。',
+    examples:[{pt:'Muito axé na roda hoje!', ja:'今日はホーダのアシェが最高！'}]},
+  {id:'v3-read-queixo', vol:'v3', kind:'reading', q:'queixo', a:['ケイショ'], speak:'queixo',
+    explain:'<b>que</b> は「ケ」。<b>x</b> はこの語では「シ」。', examples:[{pt:'Protege o queixo!', ja:'あごを守って！'}]},
+  {id:'v3-read-minha', vol:'v3', kind:'reading', q:'minha', a:['ミーニャ','ミニャ'], speak:'minha',
+    explain:'<b>nh</b> は「ニャ」。 possessivo（所有形容詞）。', examples:[{pt:'Minha camisa caiu.', ja:'私のシャツが落ちた。'}]},
+
+  {id:'v3-mean-sinho', vol:'v3', kind:'meaning', q:'sinhô', a:['男主人','ご主人'], speak:'sinhô',
+    explain:'本来は <b>senhor</b> の訛り。奴隷時代の語。', examples:[{pt:'O sinhô mandou chamar.', ja:'ご主人が呼んでいる。'}]},
+  {id:'v3-mean-galo', vol:'v3', kind:'meaning', q:'galo', a:['雄鶏','おんどり'], speak:'galo',
+    explain:'歌詞によく出る語。', examples:[{pt:'O galo cantou.', ja:'雄鶏が鳴いた。'}]},
+  {id:'v3-mean-acucar', vol:'v3', kind:'meaning', q:'açúcar', a:['砂糖'], speak:'açúcar',
+    explain:'サトウキビ農園の歴史と結びつく語。', examples:[{pt:'Sem açúcar, por favor.', ja:'砂糖抜きでお願いします。'}]},
+  {id:'v3-mean-escravo', vol:'v3', kind:'meaning', q:'escravo', a:['奴隷'], speak:'escravo',
+    explain:'ブラジルの歴史語彙として重要。', examples:[{pt:'História dos escravos no Brasil.', ja:'ブラジルの奴隷の歴史。'}]},
+  {id:'v3-mean-esquerda', vol:'v3', kind:'meaning', q:'esquerda', a:['左'], speak:'esquerda',
+    explain:'方向語。<b>esq</b> の綴りに注意。', examples:[{pt:'Gira para a esquerda.', ja:'左に回って。'}]},
+  {id:'v3-mean-cinquenta', vol:'v3', kind:'meaning', q:'cinquenta', a:['50','５０','五十'], speak:'cinquenta',
+    explain:'数詞。<b>qu</b> は「ク/キ」ではなく「クェ」。', examples:[{pt:'Cinquenta abdominais!', ja:'腹筋50回！'}]},
+  {id:'v3-mean-feliz', vol:'v3', kind:'meaning', q:'feliz', a:['幸せな','嬉しい'], speak:'feliz',
+    explain:'形容詞。', examples:[{pt:'Fico feliz com seu jogo!', ja:'君のジョーゴが見れて嬉しい！'}]},
+  {id:'v3-mean-meu', vol:'v3', kind:'meaning', q:'meu', a:['私の','ぼくの','おれの'], speak:'meu',
+    explain:'所有形容詞。性数一致に注意（meu/minha/meus/minhas）。', examples:[{pt:'Esse é meu berimbau.', ja:'これは私のビリンバウ。'}]},
+
+  {id:'v3-spell-furacao', vol:'v3', kind:'spelling', q:'竜巻', a:['furacao','furacão'], speak:'furacão',
+    explain:'<b>furacão</b> はアクセントと鼻母音に注意。<b>fracão</b> と書かないように（意味が変わる）。',
+    examples:[{pt:'O furacão é forte.', ja:'その竜巻は強い。'}]},
+  {id:'v3-spell-azul', vol:'v3', kind:'spelling', q:'青', a:['azul'], speak:'azul',
+    explain:'色名。複数は <i>azuis</i>。', examples:[{pt:'A corda é azul.', ja:'帯は青です。'}]},
+  {id:'v3-spell-atabaque', vol:'v3', kind:'spelling', q:'アタバキ（楽器）', a:['atabaque'], speak:'atabaque',
+    explain:'カポエイラの太鼓。', examples:[{pt:'Toque o atabaque.', ja:'アタバキを叩いて。'}]},
+  {id:'v3-spell-baqueta', vol:'v3', kind:'spelling', q:'バケータ（スティック）', a:['baqueta'], speak:'baqueta',
+    explain:'バケータ＝スティック。', examples:[{pt:'Pegue a baqueta do berimbau.', ja:'ビリンバウのバケータを取って。'}]},
+  {id:'v3-spell-casa', vol:'v3', kind:'spelling', q:'家', a:['casa'], speak:'casa',
+    explain:'基本語彙。', examples:[{pt:'Volto para casa depois do treino.', ja:'稽古の後、家に帰る。'}]},
+  {id:'v3-spell-deus', vol:'v3', kind:'spelling', q:'神', a:['deus','Deus'], speak:'Deus',
+    explain:'文脈により大文字で <b>Deus</b>。', examples:[{pt:'Deus abençoe a roda.', ja:'神がホーダを祝福しますように。'}]},
+];
+
+// ===== Quiz engine =====
+let STATE = {
+  mode: 'practice',
+  volume: 'mix',
+  qs: [],
+  i: 0,
+  score: 0,
+  review: [],
+};
+
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => document.querySelectorAll(sel);
+
+function pick(list, n) {
+  const arr = [...list];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.slice(0, n);
+}
+
+function buildSet(volume, count) {
+  const pool = DATA.filter(d => volume === 'mix' ? true : d.vol === volume);
+  // balance kinds roughly
+  const byKind = {
+    reading: pool.filter(d=>d.kind==='reading'),
+    meaning: pool.filter(d=>d.kind==='meaning'),
+    spelling: pool.filter(d=>d.kind==='spelling'),
+  };
+  const each = Math.max(1, Math.floor(count/3));
+  let out = [];
+  out = out.concat(pick(byKind.reading, each), pick(byKind.meaning, each), pick(byKind.spelling, each));
+  if (out.length < count) {
+    const rest = pool.filter(d=>!out.includes(d));
+    out = out.concat(pick(rest, count - out.length));
+  }
+  // shuffle final
+  return pick(out, out.length);
+}
+
+function startQuiz() {
+  STATE.mode = $('#sel-mode').value;
+  STATE.volume = $('#sel-volume').value;
+  const n = Math.min(Math.max(parseInt($('#num-qs').value||'15',10), 5), 60);
+  STATE.qs = buildSet(STATE.volume, n);
+  STATE.i = 0; STATE.score = 0; STATE.review = [];
+  $('#quiz').style.display = '';
+  $('#result').style.display = 'none';
+  renderQ();
+}
+
+function renderQ() {
+  const q = STATE.qs[STATE.i];
+  if (!q) return endQuiz();
+  $('#pill-vol').textContent = q.vol.toUpperCase();
+  $('#pill-kind').textContent = q.kind === 'reading' ? '読み（発音）' : q.kind === 'meaning' ? '意味（日本語）' : 'スペル（ポルトガル語）';
+  $('#pill-no').textContent = `${STATE.i+1} / ${STATE.qs.length}`;
+
+  const promptText = q.kind === 'reading' ? 'このポルトガル語の<b>読み（カタカナ）</b>は？' :
+                     q.kind === 'meaning' ? 'このポルトガル語の<b>意味（日本語）</b>は？' :
+                     '日本語を<b>ポルトガル語で</b>書いてください。';
+  $('#prompt').innerHTML = promptText;
+  $('#qword').textContent = q.q;
+  $('#qsub').textContent = q.kind === 'spelling' ? 'アクセント無しでも採点OK（例：furacao）' : '';
+  $('#answer').value = '';
+  $('#judge').textContent = '';
+  $('#explain').classList.remove('show');
+  $('#explain-text').innerHTML = q.explain || '';
+  $('#examples').innerHTML = (q.examples || []).map(ex => `<li><span class="kbd">${ex.pt}</span> — ${ex.ja}</li>`).join('');
+  $('#btn-next').disabled = true;
+  updateBar();
+}
+
+function updateBar() {
+  const pct = (STATE.i / STATE.qs.length) * 100;
+  $('#bar').style.width = `${pct}%`;
+}
+
+function checkAnswer(userAnswer) {
+  const q = STATE.qs[STATE.i];
+  const raw = (userAnswer || $('#answer').value || '').trim();
+  if (!raw) return;
+
+  // type constraints
+  if (q.kind === 'reading' && $('#chk-reading-katakana').checked) {
+    if (!isKatakana(raw)) {
+      $('#judge').innerHTML = `<span class="hint">カタカナで入力してください（例：ミーニャ）。</span>`;
+      return;
+    }
+  }
+
+  // Normalize & compare
+  const ans = normalize(raw);
+
+  let ok = false;
+  for (const a of q.a) {
+    // allow katakana variants as is; for PT strings, normalize accents
+    const target = q.kind === 'reading' ? a.trim() : normalize(a);
+    if ((q.kind === 'reading' ? ans === normalize(a) : ans === target) ||
+        // partial matches for meaning (Japanese): accept contains (e.g., "元気です" vs "元気")
+        (q.kind === 'meaning' && normalize(a).length >= 2 && ans.includes(normalize(a))) ) {
+      ok = true; break;
+    }
+  }
+
+  const correctShow = Array.from(new Set(q.a)).join(' / ');
+  if (ok) {
+    if (STATE.mode === 'practice') STATE.score++;
+    $('#judge').innerHTML = `<span class="ok">✔ 正解！</span> 答え：<span class="kbd">${correctShow}</span>`;
+    $('#explain').classList.add('show');
+    // auto speak example after correct
+    if ($('#chk-audio-auto').checked && q.examples && q.examples[0]) {
+      speak(q.examples[0].pt);
+    }
+  } else {
+    $('#judge').innerHTML = `<span class="ng">✘ 不正解</span> 正解：<span class="kbd">${correctShow}</span>`;
+    $('#explain').classList.add('show');
+  }
+
+  // record review
+  STATE.review.push({
+    id: q.id, vol:q.vol, kind:q.kind, q:q.q, your: raw, correct: correctShow, ok
+  });
+
+  $('#btn-next').disabled = false;
+}
+
+function nextQ() {
+  STATE.i++;
+  if (STATE.i >= STATE.qs.length) return endQuiz();
+  renderQ();
+}
+
+function endQuiz() {
+  // finalize score for exam mode
+  if (STATE.mode === 'exam') {
+    STATE.score = STATE.review.filter(r=>r.ok).length;
+  }
+  $('#quiz').style.display = 'none';
+  $('#result').style.display = '';
+  $('#score').textContent = `正解数：${STATE.score} / ${STATE.qs.length}（正答率 ${(STATE.score/STATE.qs.length*100).toFixed(0)}%）`;
+  const rows = STATE.review.map(r=>`
+    <tr class="${r.ok? '': 'miss'}">
+      <td>${r.vol.toUpperCase()}</td>
+      <td>${r.kind==='reading'?'読み':r.kind==='meaning'?'意味':'スペル'}</td>
+      <td>${r.q}</td>
+      <td><span class="kbd">${r.correct}</span></td>
+      <td>${r.your? `<span class="kbd">${r.your}</span>` : '<span class="muted">（未回答）</span>'}</td>
+      <td>${r.ok? '✔' : '✘'}</td>
+    </tr>`).join('');
+  $('#review').innerHTML = `<div style="overflow:auto; max-height: 420px"><table>
+    <thead><tr><th>Vol</th><th>種別</th><th>設問</th><th>正解</th><th>あなたの回答</th><th>判定</th></tr></thead>
+    <tbody>${rows}</tbody></table></div>`;
+}
+
+// ===== Wiring =====
+$('#btn-start').addEventListener('click', startQuiz);
+$('#btn-check').addEventListener('click', ()=>checkAnswer());
+$('#btn-next').addEventListener('click', nextQ);
+$('#btn-skip').addEventListener('click', ()=>{ STATE.review.push({id:STATE.qs[STATE.i].id, vol:STATE.qs[STATE.i].vol, kind:STATE.qs[STATE.i].kind, q:STATE.qs[STATE.i].q, your:'', correct: Array.from(new Set(STATE.qs[STATE.i].a)).join(' / '), ok:false}); nextQ(); });
+$('#btn-show').addEventListener('click', ()=> $('#explain').classList.toggle('show'));
+$('#btn-home').addEventListener('click', ()=>{ $('#result').style.display='none'; });
+$('#btn-retry').addEventListener('click', startQuiz);
+$('#btn-speak').addEventListener('click', ()=>{
+  const q = STATE.qs[STATE.i];
+  if (q && q.speak) speak(q.speak);
+});
+
+// submit with Enter
+$('#answer').addEventListener('keydown', (e)=>{
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    if ($('#btn-next').disabled) checkAnswer(); else nextQ();
+  }
+});
+
+// voice list loading (Chrome loads async)
+if (window.speechSynthesis) {
+  speechSynthesis.onvoiceschanged = () => {};
+}
+</script>
+</body>
+</html>
